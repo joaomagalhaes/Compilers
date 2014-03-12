@@ -1,0 +1,15 @@
+class echo {
+	public static void main(String[] args) {
+		int x; // trolol
+		x = Integer.parseInt(args[0]);
+		System.out.println(x);
+		false;
+		4 + 5;
+	}
+
+	/*
+		final
+		float
+	 teste zao q n devia aparecer
+	*/
+}
