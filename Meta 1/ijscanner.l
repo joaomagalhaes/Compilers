@@ -91,7 +91,7 @@ int col = 1;
 "float"					{ col += yyleng; printf("RESERVED\n"); }
 "native"				{ col += yyleng; printf("RESERVED\n"); }
 "super"					{ col += yyleng; printf("RESERVED\n"); }
-
+"null"					{ col += yyleng; printf("RESERVED\n"); }
 %{  
 	/* IDs and INTLITs */
 %}
