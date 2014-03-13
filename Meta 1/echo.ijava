@@ -5,6 +5,8 @@ class echo {
 		System.out.println(x);
 		false;
 		4 + 5;
+		0x987;
+		0x2;
 	}
 
 	/*

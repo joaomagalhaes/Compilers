@@ -92,11 +92,13 @@ int col = 1;
 "native"				{ col += yyleng; printf("RESERVED\n"); }
 "super"					{ col += yyleng; printf("RESERVED\n"); }
 "null"					{ col += yyleng; printf("RESERVED\n"); }
+
 %{  
 	/* IDs and INTLITs */
 %}
 [a-zA-Z_$][a-zA-Z0-9_$]*		{ col += yyleng; printf("ID(%s)\n", yytext); }
-[0-9]+|"0x"[a-fA-F0-9]+			{ col += yyleng; printf("INTLIT(%s)\n", yytext);  }
+0					{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
+[1-9][0-9]*|"0x"[a-fA-F0-9]+		{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
 
 %{  
 	/* comments handler */
