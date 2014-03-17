@@ -93,7 +93,7 @@ int line = 1, col = 1, lineAux, colAux;
 <COMMENT>.				;
 <COMMENT>"\n"				{ line++; col = 1; }
 <COMMENT><<EOF>>			{ printf("Line %d, col %d: unterminated comment\n", lineAux, colAux); return 0; }
-<COMMENT>"*/"				{ BEGIN 0; }
+<COMMENT>"*/"				{ BEGIN 0; col += yyleng + 2; }
 
 "\n"					{ line++; col = 1; } 
 [ \t\f\r]				{ col += yyleng; }

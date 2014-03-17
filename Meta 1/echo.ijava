@@ -2,16 +2,19 @@
 class echo {
 
 	public static void main(String[] args) {
-		int x; // trolol
+	/* lolada
+	int x; // trolol
 		x = Integer.parseInt(args[0]);
 		System.out.println(x);
 		false;
 		4 + 5;
 		0x987;
 		0x2;
-	}
-	0x5434/* merda
+}dsafdsd*/##
+
+	0x5434;
 	interface; finally; package
+	#
 	/*
 		final
 		float
