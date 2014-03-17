@@ -8,18 +8,11 @@
 
 %{
 #include <stdio.h>
-#include <stdlib.h>
-int line = 1;
-int col = 1;
-int lineAux;
-int colAux;
+int line = 1, col = 1, lineAux, colAux;
 %}
 
 %%
 
-%{  
-	/* iJava tokens */ 
-%}
 "true"|"false"				{ col += yyleng; printf("BOOLLIT(%s)\n", yytext); }
 "int"					{ col += yyleng; printf("INT\n");       }
 "boolean"				{ col += yyleng; printf("BOOL\n");      }
@@ -51,9 +44,6 @@ int colAux;
 ";"			   		{ col += yyleng; printf("SEMIC\n");     }
 ","					{ col += yyleng; printf("COMMA\n");     }
 
-%{  
-	/* Java reserved tokens */
-%}
 "abstract"				{ col += yyleng; printf("RESERVED(%s)\n", yytext); }
 "continue"				{ col += yyleng; printf("RESERVED(%s)\n", yytext); }	
 "for"					{ col += yyleng; printf("RESERVED(%s)\n", yytext); }
@@ -95,16 +85,9 @@ int colAux;
 "super"					{ col += yyleng; printf("RESERVED(%s)\n", yytext); }
 "null"					{ col += yyleng; printf("RESERVED(%s)\n", yytext); }
 
-%{  
-	/* IDs and INTLITs */
-%}
 [a-zA-Z_$][a-zA-Z0-9_$]*		{ col += yyleng; printf("ID(%s)\n", yytext); }
-[0-9]+					{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
-0x[a-fA-F0-9]+				{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
+[0-9]+|0x[a-fA-F0-9]+			{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
 
-%{  
-	/* comments handler */
-%}
 "//".*					;
 "/*"					{ BEGIN COMMENT; lineAux = line; colAux = col; }
 <COMMENT>.				;
@@ -112,12 +95,9 @@ int colAux;
 <COMMENT><<EOF>>			{ printf("Line %d, col %d: unterminated comment\n", lineAux, colAux); return 0; }
 <COMMENT>"*/"				{ BEGIN 0; }
 
-%{  
-	/* other stuff */
-%}
 "\n"					{ line++; col = 1; } 
 [ \t\f\r]				{ col += yyleng; }
-.					{ printf("Line %d, col %d: illegal character ('%c')\n", line, col +1, yytext[0]); col += yyleng; }
+.					{ printf("Line %d, col %d: illegal character ('%c')\n", line, col, yytext[0]); col += yyleng; }
 
 %%
 
