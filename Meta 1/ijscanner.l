@@ -11,6 +11,8 @@
 #include <stdlib.h>
 int line = 1;
 int col = 1;
+int lineAux;
+int colAux;
 %}
 
 %%
@@ -97,17 +99,17 @@ int col = 1;
 	/* IDs and INTLITs */
 %}
 [a-zA-Z_$][a-zA-Z0-9_$]*		{ col += yyleng; printf("ID(%s)\n", yytext); }
-0					{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
-[1-9][0-9]*|"0x"[a-fA-F0-9]+		{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
+[0-9]+					{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
+0x[a-fA-F0-9]+				{ col += yyleng; printf("INTLIT(%s)\n", yytext); }
 
 %{  
 	/* comments handler */
 %}
 "//".*					;
-"/*"					{ BEGIN COMMENT; }
+"/*"					{ BEGIN COMMENT; lineAux = line; colAux = col; }
 <COMMENT>.				;
 <COMMENT>"\n"				{ line++; col = 1; }
-<COMMENT><<EOF>>			{ printf("Line %d, col %d: unterminated comment\n", line, col + 1); col += yyleng; }
+<COMMENT><<EOF>>			{ printf("Line %d, col %d: unterminated comment\n", lineAux, colAux); return 0; }
 <COMMENT>"*/"				{ BEGIN 0; }
 
 %{  

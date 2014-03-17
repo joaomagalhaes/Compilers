@@ -1,4 +1,6 @@
+##
 class echo {
+
 	public static void main(String[] args) {
 		int x; // trolol
 		x = Integer.parseInt(args[0]);
@@ -14,4 +16,7 @@ class echo {
 		float
 	 teste zao q n devia aparecer
 	*/
+
+/*
+	sadasds
 }
