@@ -117,7 +117,7 @@ int colAux;
 %}
 "\n"					{ line++; col = 1; } 
 [ \t\f\r]				{ col += yyleng; }
-.					{ printf("Line %d, col %d: illegal character ('%c')\n", line, col + 1, yytext[0]); col += yyleng; }
+.					{ printf("Line %d, col %d: illegal character ('%c')\n", line, col +1, yytext[0]); col += yyleng; }
 
 %%
 
