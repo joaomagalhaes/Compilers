@@ -34,46 +34,103 @@ int yylex(void);
 
 Start:		Program 	{ myProgram==$$; }
 
-Program:	CLASS ID OBRACE FieldDecl CBRACE	{ $$=insertProgram($4); }	
-		|	CLASS ID OBRACE MethodDecl CBRACE	{ $$=insertProgram($4); }
+Program:	CLASS ID OBRACE ProgFieldDecl CBRACE	{ }	
+		|	CLASS ID OBRACE ProgMethodDecl CBRACE	{ }
 		;
 
-FieldDecl:	STATIC VarDecl	{ $$=insertFieldDecl($2); }
+ProgFieldDecl:	FieldDecl ProgFieldDecl {}
+		|	FieldDecl					{}
+		|
 		;
 
-MethodDecl:	PUBLIC STATIC Type ID OCURV {}
-		|	PUBLIC STATIC VOID ID OCURV {}
-		|	PUBLIC STATIC ID OCURV {}
+ProgMethodDecl:	MethodDecl ProgMethodDecl {}
+		|	MethodDecl					 {}
+		|
 		;
 
+FieldDecl:	STATIC VarDecl	{}
+		;
 
+MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl MethStatement CBRACE {}
+		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl MethStatement CBRACE {}
+		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl MethStatement CBRACE	{}
+		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl MethStatement CBRACE	{}
+		;
 
-Statement: 	OBRACE Statement CBRACE		{}
-		|	IF OCURV Expr CCURV 
+MethVarDecl:	VarDecl MethVarDecl		{}
+		|		VarDecl					{}
+		|								{}
+		;
 
+MethStatement:	Statement MethStatement	{}
+		|		Statement				{}
+		|								{}
+		;
 
+FormalParams:	STRING OSQUARE CSQUARE ID						{}
+			|	Type ID CommaTypeID								{}
+			;
 
-Expr:	Expr OP1 Expr					{ $$=insertExpr_Oper_Expr($1, OP1, $3); }
-	|	Expr OP2 Expr					{ $$=insertExpr_Oper_Expr($1, OP2, $3); }
-	|	Expr OP3 Expr					{ $$=insertExpr_Oper_Expr($1, OP3, $3); }
-	|	Expr OP4 Expr	
-	|	Expr OSQUARE Expr CSQUARE 		{}
-	|	ID								{}
-	|	INTLIT							{}
-	|	BOOLIT							{}
-	|	NEW INT OSQUARE Expr CSQUARE 	{}
-	|	NEW BOOL OSQUARE Expr CSQUARE	{}
-	|	OCURV Expr CCURV				{}
-	|	Expr DOTLENGTH					{}
-	|	OP3 Expr						{}
-	|	NOT Expr						{}
-	|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV {}
-	|	ID OCURV Args CCURV				{}
-	|	Expr CommaExp					{}
+CommaTypeID:	COMMA Type ID CommaTypeID						{}
+			|	COMMA Type ID									{}
+			|													{}
+			;	
 
-CommaExp:	
+VarDecl:	Type ID CommaID SEMIC								{}
+		;
 
-Args: 
+CommaID:	COMMA ID CommaID									{}
+		|	COMMA ID											{}
+		|														{}
+		;
+
+Type:		INT													{}
+		|	INT OSQUARE CSQUARE									{}
+		|	BOOL												{}
+		|	BOOL OSQUARE CSQUARE								{}
+		;
+
+Statement: 	OBRACE StatRepeat CBRACE							{}
+		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{} 
+		|	IF OCURV Expr CCURV Statement						{}
+		|	WHILE OCURV Expr CCURV Statement					{}
+		|	PRINT OCURV Expr CCURV SEMIC						{}
+		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{}
+		|	ID ASSIGN Expr SEMIC								{}
+		|	RETURN Expr SEMIC									{}
+		|	RETURN SEMIC										{}
+		;
+
+StatRep:	Statement StatRep				 					{}
+		|	Statement											{}
+		;
+
+Expr:		Expr OP1 Expr										{}
+		|	Expr OP2 Expr										{}
+		|	Expr OP3 Expr										{}
+		|	Expr OP4 Expr										{}
+		|	Expr OSQUARE Expr CSQUARE 							{}
+		|	ID													{}
+		|	INTLIT												{}
+		|	BOOLIT												{}
+		|	NEW INT OSQUARE Expr CSQUARE 						{}
+		|	NEW BOOL OSQUARE Expr CSQUARE						{}
+		|	OCURV Expr CCURV									{}
+		|	Expr DOTLENGTH										{}
+		|	OP3 Expr											{}
+		|	NOT Expr											{}
+		|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{}
+		|	ID OCURV Args CCURV									{}
+		|	ID OCURV CCURV										{}
+		;
+
+Args:		Expr CommaExpr										{}
+		;
+
+CommaExpr:	COMMA Expr CommaExpr								{}
+		|	COMMA Expr											{}
+		|														{}
+		; 
 
 
 %%
