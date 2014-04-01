@@ -7,7 +7,9 @@
 %x COMMENT
 
 %{
+#include "structures.h"
 #include <stdio.h>
+#include <string.h>
 #include "y.tab.h"
 
 int line = 1, col = 1, lineAux, colAux;
@@ -15,7 +17,7 @@ int line = 1, col = 1, lineAux, colAux;
 
 %%
 
-"true"|"false"					{ col += yyleng; yyval.string = char(*) strdup(yytext); return BOOLLIT; }
+"true"|"false"					{ col += yyleng; yylval.string = (char*) strdup(yytext); return BOOLLIT; }
 "int"							{ col += yyleng; return INT; }
 "boolean"						{ col += yyleng; return BOOL; }
 "new"							{ col += yyleng; return NEW; }
@@ -37,10 +39,10 @@ int line = 1, col = 1, lineAux, colAux;
 "}"								{ col += yyleng; return CBRACE; }
 "["								{ col += yyleng; return OSQUARE; }
 "]"								{ col += yyleng; return CSQUARE; }
-"&&"|"||"						{ col += yyleng; yyval.string = char(*) strdup(yytext); return OP1; }
-"<"|">"|"=="|"!="|"<="|">="		{ col += yyleng; yyval.string = char(*) strdup(yytext); return OP2; }
-"+"|"-"							{ col += yyleng; yyval.string = char(*) strdup(yytext); return OP3; }
-"*"|"/"|"%"						{ col += yyleng; yyval.string = char(*) strdup(yytext); return OP4; }
+"&&"|"||"						{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP1; }
+"<"|">"|"=="|"!="|"<="|">="		{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP2; }
+"+"|"-"							{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP3; }
+"*"|"/"|"%"						{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP4; }
 "!"								{ col += yyleng; return NOT; }
 "="								{ col += yyleng; return ASSIGN; }
 ";"			   					{ col += yyleng; return SEMIC; }
@@ -89,8 +91,8 @@ int line = 1, col = 1, lineAux, colAux;
 "--"							{ col += yyleng; return RESERVED; }
 "++"							{ col += yyleng; return RESERVED; }
 
-[a-zA-Z_$][a-zA-Z0-9_$]*		{ col += yyleng; yyval.string = (char*) strdup(yytext); return ID; }
-[0-9]+|0x[a-fA-F0-9]+			{ col += yyleng; yyval.string = (char*) strdup(yytext); return INTLIT; }
+[a-zA-Z_$][a-zA-Z0-9_$]*		{ col += yyleng; yylval.string = (char*) strdup(yytext); return ID; }
+[0-9]+|0x[a-fA-F0-9]+			{ col += yyleng; yylval.string = (char*) strdup(yytext); return INTLIT; }
 
 "//".*							;
 "/*"							{ BEGIN COMMENT; lineAux = line; colAux = col; }

@@ -1,5 +1,4 @@
 clear
 lex ijscanner.l 
 yacc -d ijparser.y
-cc -o exe y.tab.c lex.yy.c -ll -ly
-./exe
+gcc -o exe lex.yy.c y.tab.c functions.c

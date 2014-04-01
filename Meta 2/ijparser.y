@@ -5,6 +5,8 @@
 %}
 
 %{
+#include "structures.h"
+#include "functions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,41 +14,49 @@
 void yyerror(char* s);
 int yylex(void);
 
+is_node *myProgram = NULL;
+
 %}
 
 %union
 {
 	char* string;
+	is_node* node;
 }
 
-%token <string> BOOLLIT
-%token <string> OP1
-%token <string> OP2
-%token <string> OP3
-%token <string> OP4
-%token <string> ID
-%token <string> INTLIT
+%token <string> OP1 OP2 OP3 OP4 ID INTLIT BOOLLIT
 %token INT BOOL NEW IF ELSE WHILE PRINT PARSEINT CLASS RESERVED
 %token PUBLIC STATIC VOID STRING DOTLENGTH RETURN OCURV CCURV
 %token OBRACE CBRACE OSQUARE CSQUARE NOT ASSIGN SEMIC COMMA
 
+%type <node> Start Program FieldMethodDecl FieldDecl MethodDecl
+%type <node> MethVarDecl MethStatement FormalParams CommaTypeID VarDecl CommaID Type
+%type <node> Statement StatRep Expr Args CommaExpr
+
+%right ASSIGN
+%left OP1
+%left OP2
+%left OP3
+%left OP4
+%right NOT
+%left OCURV CCURV OBRACE CBRACE OSQUARE CSQUARE
+
+%nonassoc ELSE
+
 %%
 
-Start:		Program 	{ myProgram==$$; }
-
-Program:	CLASS ID OBRACE ProgFieldDecl CBRACE	{ }	
-		|	CLASS ID OBRACE ProgMethodDecl CBRACE	{ }
+Start:	Program 	{ $$=insertStart($1); myProgram=$$; }
 		;
 
-ProgFieldDecl:	FieldDecl ProgFieldDecl {}
-		|	FieldDecl					{}
-		|
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE	{ }	
 		;
 
-ProgMethodDecl:	MethodDecl ProgMethodDecl {}
-		|	MethodDecl					 {}
-		|
-		;
+FieldMethodDecl:	FieldDecl FieldMethodDecl {}
+				|	MethodDecl FieldMethodDecl {}
+				|	FieldDecl					{}
+				|	MethodDecl					{}
+				|							{}
+				;
 
 FieldDecl:	STATIC VarDecl	{}
 		;
@@ -90,7 +100,7 @@ Type:		INT													{}
 		|	BOOL OSQUARE CSQUARE								{}
 		;
 
-Statement: 	OBRACE StatRepeat CBRACE							{}
+Statement: 	OBRACE StatRep CBRACE								{}
 		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{} 
 		|	IF OCURV Expr CCURV Statement						{}
 		|	WHILE OCURV Expr CCURV Statement					{}
@@ -112,7 +122,7 @@ Expr:		Expr OP1 Expr										{}
 		|	Expr OSQUARE Expr CSQUARE 							{}
 		|	ID													{}
 		|	INTLIT												{}
-		|	BOOLIT												{}
+		|	BOOLLIT												{}
 		|	NEW INT OSQUARE Expr CSQUARE 						{}
 		|	NEW BOOL OSQUARE Expr CSQUARE						{}
 		|	OCURV Expr CCURV									{}
@@ -135,15 +145,16 @@ CommaExpr:	COMMA Expr CommaExpr								{}
 
 %%
 
-int main()
+int main(int argc, char **argv)
 {
-	while(1)
-	{
-		yyparse();
-	}
+	yyparse();
 }
 
-
+void yyerror(char* s)
+{
+	printf("deu merda boiii");
+	exit(0);
+}
 
 
 
