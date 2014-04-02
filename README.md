@@ -10,7 +10,10 @@ Erros Lexicais
 
 Análise Sintática
 ~~Erros Sintáticos~~
+
 ~~Análise Semântica~~
+
 ~~Tabela de Símbolos~~
+
 ~~Erros Semânticos~~
 
