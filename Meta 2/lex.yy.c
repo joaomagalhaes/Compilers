@@ -2351,11 +2351,6 @@ void yyfree (void * ptr )
 
 
 
-int main()
-{
-	yylex();
-}
-
 int yywrap()
 {
 	return 1;

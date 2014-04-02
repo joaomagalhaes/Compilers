@@ -8,8 +8,8 @@
 #include "structures.h"
 #include "functions.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h> 
+#include <string.h> 
 
 void yyerror(char* s);
 int yylex(void);
@@ -30,7 +30,7 @@ is_node *myProgram = NULL;
 %token OBRACE CBRACE OSQUARE CSQUARE NOT ASSIGN SEMIC COMMA
 
 %type <node> Start Program FieldMethodDecl FieldDecl MethodDecl
-%type <node> MethVarDecl MethStatement FormalParams CommaTypeID VarDecl CommaID Type
+%type <node> MethVarDecl FormalParams CommaTypeID VarDecl CommaID Type
 %type <node> Statement StatRep Expr Args CommaExpr
 
 %right ASSIGN
@@ -48,32 +48,24 @@ is_node *myProgram = NULL;
 Start:	Program 	{ $$=insertStart($1); myProgram=$$; }
 		;
 
-Program:	CLASS ID OBRACE FieldMethodDecl CBRACE	{ }	
-		;
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE {}	
+			;
 
 FieldMethodDecl:	FieldDecl FieldMethodDecl {}
 				|	MethodDecl FieldMethodDecl {}
-				|	FieldDecl					{}
-				|	MethodDecl					{}
 				|							{}
 				;
 
 FieldDecl:	STATIC VarDecl	{}
 		;
 
-MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl MethStatement CBRACE {}
-		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl MethStatement CBRACE {}
-		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl MethStatement CBRACE	{}
-		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl MethStatement CBRACE	{}
+MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE {}
+		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE {}
+		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE	{}
+		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE	{}
 		;
 
 MethVarDecl:	VarDecl MethVarDecl		{}
-		|		VarDecl					{}
-		|								{}
-		;
-
-MethStatement:	Statement MethStatement	{}
-		|		Statement				{}
 		|								{}
 		;
 
@@ -82,7 +74,6 @@ FormalParams:	STRING OSQUARE CSQUARE ID						{}
 			;
 
 CommaTypeID:	COMMA Type ID CommaTypeID						{}
-			|	COMMA Type ID									{}
 			|													{}
 			;	
 
@@ -90,7 +81,6 @@ VarDecl:	Type ID CommaID SEMIC								{}
 		;
 
 CommaID:	COMMA ID CommaID									{}
-		|	COMMA ID											{}
 		|														{}
 		;
 
@@ -112,7 +102,7 @@ Statement: 	OBRACE StatRep CBRACE								{}
 		;
 
 StatRep:	Statement StatRep				 					{}
-		|	Statement											{}
+		|														{}
 		;
 
 Expr:		Expr OP1 Expr										{}
@@ -138,7 +128,6 @@ Args:		Expr CommaExpr										{}
 		;
 
 CommaExpr:	COMMA Expr CommaExpr								{}
-		|	COMMA Expr											{}
 		|														{}
 		; 
 

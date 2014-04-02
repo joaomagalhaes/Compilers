@@ -109,11 +109,6 @@ int line = 1, col = 1, lineAux, colAux;
 
 %%
 
-int main()
-{
-	yylex();
-}
-
 int yywrap()
 {
 	return 1;
