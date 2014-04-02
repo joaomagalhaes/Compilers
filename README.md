@@ -5,7 +5,9 @@ Compilers
 
 
 Análise Lexical
+
 Erros Lexicais
+
 Análise Sintática
 ~~Erros Sintáticos~~
 ~~Análise Semântica~~
