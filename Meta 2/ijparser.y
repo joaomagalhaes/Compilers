@@ -33,6 +33,7 @@ is_node *myProgram = NULL;
 %type <node> MethVarDecl FormalParams CommaTypeID VarDecl CommaID Type
 %type <node> Statement StatRep Expr Args CommaExpr
 
+%left DOTLENGTH
 %right ASSIGN
 %left OP1
 %left OP2
@@ -48,7 +49,7 @@ is_node *myProgram = NULL;
 Start:	Program 	{ $$=insertStart($1); myProgram=$$; }
 		;
 
-Program:	CLASS ID OBRACE FieldMethodDecl CBRACE {}	
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$=insertProgram($4); }	
 			;
 
 FieldMethodDecl:	FieldDecl FieldMethodDecl {}
@@ -136,7 +137,8 @@ CommaExpr:	COMMA Expr CommaExpr								{}
 
 int main(int argc, char **argv)
 {
-	yyparse();
+	if( yyparse() == 0)
+		printf("bom parsing modafocka\n");
 }
 
 void yyerror(char* s)
@@ -144,20 +146,4 @@ void yyerror(char* s)
 	printf("deu merda boiii");
 	exit(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
