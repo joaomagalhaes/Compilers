@@ -1,0 +1,3 @@
+class miniteste {
+	STATIC int[] x;
+}

@@ -1,0 +1,11 @@
+
+class teste4 {
+
+	public static void cenas(String[] arrayzao)
+	{
+	}
+
+	public static int main(int param, int param2)
+	{
+	}
+}

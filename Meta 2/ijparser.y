@@ -7,12 +7,16 @@
 %{
 #include "structures.h"
 #include "functions.h"
+#include "shows.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
 
 void yyerror(char* s);
 int yylex(void);
+
+int line, col, yyleng;
+char *yytext;
 
 is_node *myProgram = NULL;
 
@@ -46,64 +50,64 @@ is_node *myProgram = NULL;
 
 %%
 
-Start:	Program 	{ $$=insertStart($1); myProgram=$$; }
+Start:	Program		{ printf("Start\n");}
 		;
 
-Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$=insertProgram($4); }	
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$ = insertProgram(insert_ID($2), $4); myProgram=$$; printf("Criacao de classe\n"); }	
 			;
 
-FieldMethodDecl:	FieldDecl FieldMethodDecl {}
-				|	MethodDecl FieldMethodDecl {}
-				|							{}
+FieldMethodDecl:	FieldDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
+				|	MethodDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
+				|								{ $$ = NULL; }
 				;
 
-FieldDecl:	STATIC VarDecl	{}
+FieldDecl:	STATIC VarDecl	{ $$ = $2; }
 		;
 
-MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE {}
-		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE {}
-		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE	{}
-		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE	{}
+MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl($3, insert_ID($4), $6, $9, $10); printf("Declaracao de Metodo\n"); }
+		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), $6, $9, $10); printf("Declaracao de Metodo\n"); } 
+		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl($3, insert_ID($4), NULL, $8, $9); printf("Declaracao de Metodo\n"); }
+		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), NULL, $8, $9); printf("Declaracao de Metodo\n"); }
 		;
 
-MethVarDecl:	VarDecl MethVarDecl		{}
-		|								{}
+MethVarDecl:	VarDecl MethVarDecl		{ $$ = insertRepetition($1, $2); }
+		|								{ $$ = NULL; printf("MethVarDecl - NULL\n"); }
 		;
 
-FormalParams:	STRING OSQUARE CSQUARE ID						{}
-			|	Type ID CommaTypeID								{}
+FormalParams:	STRING OSQUARE CSQUARE ID		{ $$ = insertFormalParams1(insertType(StringArray), insert_ID($4)); }
+			|	Type ID CommaTypeID				{ $$ = insertFormalParams2($1, insert_ID($2), $3); }
 			;
 
-CommaTypeID:	COMMA Type ID CommaTypeID						{}
-			|													{}
+CommaTypeID:	COMMA Type ID CommaTypeID		{ $$ = insertFPRepetition($2, insert_ID($3)); }
+			|									{ $$ = NULL; printf("CommaTypeID - NULL\n"); }
 			;	
 
-VarDecl:	Type ID CommaID SEMIC								{}
+VarDecl:	Type ID CommaID SEMIC		{ $$ = insertVarDecl($1, insert_ID($2), $3); printf("VarDecl\n"); }
 		;
 
-CommaID:	COMMA ID CommaID									{}
-		|														{}
+CommaID:	COMMA ID CommaID			{ $$ = insertRepetition(insert_ID($2), $3); }
+		|								{ $$ = NULL; printf("CommaID - NULL\n"); }
 		;
 
-Type:		INT													{}
-		|	INT OSQUARE CSQUARE									{}
-		|	BOOL												{}
-		|	BOOL OSQUARE CSQUARE								{}
+Type:		INT							{ $$ = insertType(Int); }
+		|	INT OSQUARE CSQUARE			{ $$ = insertType(IntArray); }
+		|	BOOL						{ $$ = insertType(Bool); }
+		|	BOOL OSQUARE CSQUARE		{ $$ = insertType(BoolArray); }
 		;
 
-Statement: 	OBRACE StatRep CBRACE								{}
-		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{} 
-		|	IF OCURV Expr CCURV Statement						{}
+Statement: 	OBRACE StatRep CBRACE								{ $$ = $2; }
+		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{ $$ = insertST_if_else($3, $5, $7); } 
+		|	IF OCURV Expr CCURV Statement						{ $$ = insertST_if_else($3, $5, NULL); }
 		|	WHILE OCURV Expr CCURV Statement					{}
 		|	PRINT OCURV Expr CCURV SEMIC						{}
 		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{}
 		|	ID ASSIGN Expr SEMIC								{}
-		|	RETURN Expr SEMIC									{}
+		|	RETURN Expr SEMIC									{ $$ = insertST_ret_exp_sem($2); }
 		|	RETURN SEMIC										{}
 		;
 
-StatRep:	Statement StatRep				 					{}
-		|														{}
+StatRep:	Statement StatRep		{ $$ = insertRepetition($1, $2); }
+		|							{ $$ = NULL; printf("StatRep - NULL\n"); }
 		;
 
 Expr:		Expr OP1 Expr										{}
@@ -111,9 +115,9 @@ Expr:		Expr OP1 Expr										{}
 		|	Expr OP3 Expr										{}
 		|	Expr OP4 Expr										{}
 		|	Expr OSQUARE Expr CSQUARE 							{}
-		|	ID													{}
-		|	INTLIT												{}
-		|	BOOLLIT												{}
+		|	ID													{ $$ = insert_ID($1); printf("Expr ID\n"); }
+		|	INTLIT												{ $$ = insert_INTLIT($1); printf("Expr INTLIT\n"); }
+		|	BOOLLIT												{ /* $$ = insert_BOOLLIT($1); printf("Expr BOOLLIT\n"); */}
 		|	NEW INT OSQUARE Expr CSQUARE 						{}
 		|	NEW BOOL OSQUARE Expr CSQUARE						{}
 		|	OCURV Expr CCURV									{}
@@ -129,7 +133,7 @@ Args:		Expr CommaExpr										{}
 		;
 
 CommaExpr:	COMMA Expr CommaExpr								{}
-		|														{}
+		|														{ $$ = NULL; printf("CommaExpr - NULL\n"); }
 		; 
 
 
@@ -137,13 +141,20 @@ CommaExpr:	COMMA Expr CommaExpr								{}
 
 int main(int argc, char **argv)
 {
-	if( yyparse() == 0)
-		printf("bom parsing modafocka\n");
+	line = 1;
+	col = 1;
+
+	if(yyparse() == 0)
+	{
+		printf("\nParsing sucessfull - Printing AST\n\n");
+		if(myProgram != NULL)
+			printAST(myProgram, 0);
+	}
 }
 
 void yyerror(char* s)
 {
-	printf("deu merda boiii");
+	printf("Line %d, col %d: %s: %s\n", line, col - yyleng, s, yytext);
 	exit(0);
 }
 

@@ -1,0 +1,8 @@
+class teste5
+{
+	public static int main(int a)
+	{
+		int p;
+		int lol;
+	}
+}

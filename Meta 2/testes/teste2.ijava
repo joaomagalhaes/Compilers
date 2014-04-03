@@ -1,0 +1,6 @@
+class teste { 
+	static int[] x;
+	static boolean a;
+	static boolean[] abc;
+	static int lol;
+}

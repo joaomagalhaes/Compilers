@@ -1,0 +1,7 @@
+class teste3
+{
+	public static int main() {
+	}
+
+	public static int cenas(){}
+}
