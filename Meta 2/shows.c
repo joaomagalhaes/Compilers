@@ -8,7 +8,7 @@ char* types[] = {	"Program",
 					"VarDecl", 
 					"MethodDecl", "MethodParams", "MethodBody", "ParamDeclaration",  
 					"CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
-					"Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "ParseArgs",
+					"Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
 					"Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
  				    "Null" };
 

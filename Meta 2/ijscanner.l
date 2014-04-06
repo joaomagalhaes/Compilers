@@ -39,8 +39,10 @@ int line = 1, col = 1, lineAux, colAux;
 "}"								{ col += yyleng; return CBRACE; }
 "["								{ col += yyleng; return OSQUARE; }
 "]"								{ col += yyleng; return CSQUARE; }
-"&&"|"||"						{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP1; }
-"<"|">"|"=="|"!="|"<="|">="		{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP2; }
+"||"							{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP1; }
+"&&"							{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP15; }
+"<"|">"|"<="|">="				{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP25; }
+"=="|"!=" 						{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP2; }
 "+"|"-"							{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP3; }
 "*"|"/"|"%"						{ col += yyleng; yylval.string = (char*) strdup(yytext); return OP4; }
 "!"								{ col += yyleng; return NOT; }

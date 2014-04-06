@@ -3,7 +3,7 @@ class teste6
 	public static int main()
 	{
 		int x,a,b;
-		if(10)
+		if(!10)
 		{
 			 
 		}else

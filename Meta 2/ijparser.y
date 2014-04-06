@@ -8,6 +8,8 @@
 #include "structures.h"
 #include "functions.h"
 #include "shows.h"
+#include "semantics.h"
+#include "symbol_table.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
@@ -19,6 +21,7 @@ int line, col, yyleng;
 char *yytext;
 
 is_node *myProgram = NULL;
+prog_env *mySemantic;
 
 %}
 
@@ -28,7 +31,7 @@ is_node *myProgram = NULL;
 	is_node* node;
 }
 
-%token <string> OP1 OP2 OP3 OP4 ID INTLIT BOOLLIT
+%token <string> OP1 OP15 OP2 OP25 OP3 OP4 ID INTLIT BOOLLIT
 %token INT BOOL NEW IF ELSE WHILE PRINT PARSEINT CLASS RESERVED
 %token PUBLIC STATIC VOID STRING DOTLENGTH RETURN OCURV CCURV
 %token OBRACE CBRACE OSQUARE CSQUARE NOT ASSIGN SEMIC COMMA
@@ -37,23 +40,26 @@ is_node *myProgram = NULL;
 %type <node> MethVarDecl FormalParams CommaTypeID VarDecl CommaID Type
 %type <node> Statement StatRep Expr Args CommaExpr
 
-%left DOTLENGTH
 %right ASSIGN
 %left OP1
+%left OP15
 %left OP2
+%left OP25
 %left OP3
 %left OP4
+%right NEW
 %right NOT
-%left OCURV CCURV OBRACE CBRACE OSQUARE CSQUARE
+%left OCURV CCURV OSQUARE CSQUARE
+%left DOTLENGTH
 
 %nonassoc ELSE
 
 %%
 
-Start:	Program		{ printf("Start\n");}
+Start:	Program		{ }
 		;
 
-Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$ = insertProgram(insert_ID($2), $4); myProgram=$$; printf("Criacao de classe\n"); }	
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$ = insertProgram(insert_ID($2), $4); myProgram=$$; }	
 			;
 
 FieldMethodDecl:	FieldDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
@@ -64,14 +70,14 @@ FieldMethodDecl:	FieldDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
 FieldDecl:	STATIC VarDecl	{ $$ = $2; }
 		;
 
-MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl($3, insert_ID($4), $6, $9, $10); printf("Declaracao de Metodo\n"); }
-		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), $6, $9, $10); printf("Declaracao de Metodo\n"); } 
-		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl($3, insert_ID($4), NULL, $8, $9); printf("Declaracao de Metodo\n"); }
-		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), NULL, $8, $9); printf("Declaracao de Metodo\n"); }
+MethodDecl:		PUBLIC STATIC Type ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl($3, insert_ID($4), $6, $9, $10); }
+		|		PUBLIC STATIC VOID ID OCURV FormalParams CCURV OBRACE MethVarDecl StatRep CBRACE 	{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), $6, $9, $10); } 
+		|		PUBLIC STATIC Type ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl($3, insert_ID($4), NULL, $8, $9); }
+		|		PUBLIC STATIC VOID ID OCURV CCURV OBRACE MethVarDecl StatRep CBRACE					{ $$ = insertMethodDecl(insertType(Void), insert_ID($4), NULL, $8, $9); }
 		;
 
 MethVarDecl:	VarDecl MethVarDecl		{ $$ = insertRepetition($1, $2); }
-		|								{ $$ = NULL; printf("MethVarDecl - NULL\n"); }
+		|								{ $$ = NULL; }
 		;
 
 FormalParams:	STRING OSQUARE CSQUARE ID		{ $$ = insertFormalParams1(insertType(StringArray), insert_ID($4)); }
@@ -79,14 +85,14 @@ FormalParams:	STRING OSQUARE CSQUARE ID		{ $$ = insertFormalParams1(insertType(S
 			;
 
 CommaTypeID:	COMMA Type ID CommaTypeID		{ $$ = insertFPRepetition($2, insert_ID($3)); }
-			|									{ $$ = NULL; printf("CommaTypeID - NULL\n"); }
+			|									{ $$ = NULL; }
 			;	
 
-VarDecl:	Type ID CommaID SEMIC		{ $$ = insertVarDecl($1, insert_ID($2), $3); printf("VarDecl\n"); }
+VarDecl:	Type ID CommaID SEMIC		{ $$ = insertVarDecl($1, insert_ID($2), $3); }
 		;
 
 CommaID:	COMMA ID CommaID			{ $$ = insertRepetition(insert_ID($2), $3); }
-		|								{ $$ = NULL; printf("CommaID - NULL\n"); }
+		|								{ $$ = NULL; }
 		;
 
 Type:		INT							{ $$ = insertType(Int); }
@@ -95,47 +101,48 @@ Type:		INT							{ $$ = insertType(Int); }
 		|	BOOL OSQUARE CSQUARE		{ $$ = insertType(BoolArray); }
 		;
 
-Statement: 	OBRACE StatRep CBRACE								{ $$ = $2; }
+Statement: 	OBRACE StatRep CBRACE								{ $$ = $2; /* COUMPOUND STATEMENT?? */  }
 		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{ $$ = insertST_if_else($3, $5, $7); } 
 		|	IF OCURV Expr CCURV Statement						{ $$ = insertST_if_else($3, $5, NULL); }
-		|	WHILE OCURV Expr CCURV Statement					{}
-		|	PRINT OCURV Expr CCURV SEMIC						{}
-		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{}
-		|	ID ASSIGN Expr SEMIC								{}
+		|	WHILE OCURV Expr CCURV Statement					{ $$ = insertST_while_expr_stat($3, $5); }
+		|	PRINT OCURV Expr CCURV SEMIC						{ $$ = insertST_print_expr_sem($3); }
+		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{ $$ = insertST_id_expr_assign_expr(insert_ID($1), $3, $6); }
+		|	ID ASSIGN Expr SEMIC								{ $$ = insertST_id_assign_exp_sem(insert_ID($1), $3); }
 		|	RETURN Expr SEMIC									{ $$ = insertST_ret_exp_sem($2); }
 		|	RETURN SEMIC										{}
 		;
 
 StatRep:	Statement StatRep		{ $$ = insertRepetition($1, $2); }
-		|							{ $$ = NULL; printf("StatRep - NULL\n"); }
+		|							{ $$ = NULL;  }
 		;
 
-Expr:		Expr OP1 Expr										{}
-		|	Expr OP2 Expr										{}
-		|	Expr OP3 Expr										{}
-		|	Expr OP4 Expr										{}
-		|	Expr OSQUARE Expr CSQUARE 							{}
-		|	ID													{ $$ = insert_ID($1); printf("Expr ID\n"); }
-		|	INTLIT												{ $$ = insert_INTLIT($1); printf("Expr INTLIT\n"); }
-		|	BOOLLIT												{ /* $$ = insert_BOOLLIT($1); printf("Expr BOOLLIT\n"); */}
-		|	NEW INT OSQUARE Expr CSQUARE 						{}
-		|	NEW BOOL OSQUARE Expr CSQUARE						{}
-		|	OCURV Expr CCURV									{}
-		|	Expr DOTLENGTH										{}
-		|	OP3 Expr											{}
-		|	NOT Expr											{}
-		|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{}
-		|	ID OCURV Args CCURV									{}
-		|	ID OCURV CCURV										{}
+Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		| 	Expr OP15 Expr 										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		|	Expr OP2 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		|	Expr OP25 Expr 										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		|	Expr OP3 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		|	Expr OP4 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
+		|	Expr OSQUARE Expr CSQUARE 							{ $$ = insert_expr_squares_expr($1, $3); }
+		|	ID													{ $$ = insert_ID($1); }
+		|	INTLIT												{ $$ = insert_INTLIT($1); }
+		|	BOOLLIT												{ $$ = insert_BOOLLIT($1); }
+		|	NEW INT OSQUARE Expr CSQUARE 						{ $$ = insert_new_exp(NewInt, $4); }
+		|	NEW BOOL OSQUARE Expr CSQUARE						{ $$ = insert_new_exp(NewBool, $4); }
+		|	OCURV Expr CCURV									{ /* $$ = insert_curv_exp($2); */ }
+		|	Expr DOTLENGTH										{ $$ = insert_length($1); }
+		|	OP3 Expr											{ $$ = insert_Oper_Exp($1, $2); }
+		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); } 
+		|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{ $$ = insert_ParseInt(insert_ID($3), $5); }
+		|	ID OCURV Args CCURV									{ $$ = insert_id_args(insert_ID($1), $3); }  
+		|	ID OCURV CCURV										{ $$ = insert_ID($1); }
 		;
 
-Args:		Expr CommaExpr										{}
+Args:		Expr CommaExpr				{ $$ = insertRepetition($1, $2); }
 		;
 
-CommaExpr:	COMMA Expr CommaExpr								{}
-		|														{ $$ = NULL; printf("CommaExpr - NULL\n"); }
+CommaExpr:	COMMA Expr CommaExpr		{ $$ = insertRepetition($2, $3); }  
+		|								{ $$ = NULL; }
 		; 
-
 
 %%
 
@@ -143,13 +150,31 @@ int main(int argc, char **argv)
 {
 	line = 1;
 	col = 1;
+	int i;
 
 	if(yyparse() == 0)
 	{
-		printf("\nParsing sucessfull - Printing AST\n\n");
-		if(myProgram != NULL)
+		int show_ast = 0, show_table = 0;
+
+		for(i = 0; i < argc; i++)
+		{
+			if(strcmp(argv[i], "-t") == 0)
+				show_ast = 1;
+			
+			if(strcmp(argv[i], "-s") == 0)
+				show_table = 1;
+		}	
+
+		if(show_ast == 1 && myProgram != NULL)
 			printAST(myProgram, 0);
+	
+		check_program(myProgram); // build symbol table			
+		
+		if(show_table == 1)
+			printf("print symbol table\n");
 	}
+	else
+		printf("\nParsing not sucessfull\n");
 }
 
 void yyerror(char* s)
