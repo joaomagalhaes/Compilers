@@ -101,7 +101,7 @@ Type:		INT							{ $$ = insertType(Int); }
 		|	BOOL OSQUARE CSQUARE		{ $$ = insertType(BoolArray); }
 		;
 
-Statement: 	OBRACE StatRep CBRACE								{ $$ = $2; /* COUMPOUND STATEMENT?? */  }
+Statement: 	OBRACE StatRep CBRACE								{ $$ = insertST_compoundstat($2); }
 		|	IF OCURV Expr CCURV	Statement ELSE Statement 		{ $$ = insertST_if_else($3, $5, $7); } 
 		|	IF OCURV Expr CCURV Statement						{ $$ = insertST_if_else($3, $5, NULL); }
 		|	WHILE OCURV Expr CCURV Statement					{ $$ = insertST_while_expr_stat($3, $5); }
@@ -109,7 +109,7 @@ Statement: 	OBRACE StatRep CBRACE								{ $$ = $2; /* COUMPOUND STATEMENT?? */ 
 		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{ $$ = insertST_id_expr_assign_expr(insert_ID($1), $3, $6); }
 		|	ID ASSIGN Expr SEMIC								{ $$ = insertST_id_assign_exp_sem(insert_ID($1), $3); }
 		|	RETURN Expr SEMIC									{ $$ = insertST_ret_exp_sem($2); }
-		|	RETURN SEMIC										{}
+		|	RETURN SEMIC										{ $$ = nullNode(); }
 		;
 
 StatRep:	Statement StatRep		{ $$ = insertRepetition($1, $2); }
@@ -128,7 +128,7 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	BOOLLIT												{ $$ = insert_BOOLLIT($1); }
 		|	NEW INT OSQUARE Expr CSQUARE 						{ $$ = insert_new_exp(NewInt, $4); }
 		|	NEW BOOL OSQUARE Expr CSQUARE						{ $$ = insert_new_exp(NewBool, $4); }
-		|	OCURV Expr CCURV									{ /* $$ = insert_curv_exp($2); */ }
+		|	OCURV Expr CCURV									{ $$ = $2; /*review*/ }
 		|	Expr DOTLENGTH										{ $$ = insert_length($1); }
 		|	OP3 Expr											{ $$ = insert_Oper_Exp($1, $2); }
 		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); } 

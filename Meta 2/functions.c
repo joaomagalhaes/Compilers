@@ -170,6 +170,28 @@ is_node *insertVarDecl(is_node *type, is_node *id, is_node *moreIDS)
 // Type
 
 // Statement
+is_node *insertST_compoundstat(is_node *stat)
+{
+    is_node *node = (is_node *)malloc(sizeof(is_node));
+
+    if(stat != NULL)
+    {
+        if(stat->next != NULL)
+        {
+            node->child = stat;
+            node->next = NULL;
+            node->type = CompoundStat;
+            node->id = NULL;
+        }
+        else
+            return stat;
+    
+    } else
+        node = nullNode();
+    
+    return node;
+}
+
 is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2)
 {
 	is_node *node = (is_node*) malloc(sizeof(is_node));
@@ -444,7 +466,17 @@ is_node *insertRepetition(is_node *x, is_node *y)
     return x;
 }
 
+is_node *nullNode()
+{
+    is_node *node = (is_node*) malloc(sizeof(is_node));
 
+    node->child = NULL;
+    node->next = NULL;
+    node->id = NULL;
+    node->type = Null;
+
+    return node;
+}
 
 
 

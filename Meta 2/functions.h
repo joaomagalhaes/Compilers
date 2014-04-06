@@ -30,6 +30,7 @@ is_node *insertVarDecl(is_node *type, is_node *id, is_node *moreIDS);
 // Type
 
 // Statement
+is_node *insertST_compoundstat(is_node *stat);
 is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2);
 is_node *insertST_while_expr_stat(is_node *expr, is_node *stat);
 is_node *insertST_print_expr_sem(is_node *expr);
@@ -54,5 +55,5 @@ is_node *insert_INTLIT(char* str);
 is_node *insert_BOOLLIT(char* str);
 is_node *insertType(node_type type);
 is_node *insertRepetition(is_node *x, is_node *y);
-
+is_node *nullNode();
 
