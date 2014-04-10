@@ -5,9 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern is_node *myProgram;
-extern prog_env *mySemantic;
-
 char* sem_type[] = {   "Program",
                     "VarDecl",
                     "MethodDecl", "MethodParams", "MethodBody", "ParamDeclaration",
@@ -16,29 +13,58 @@ char* sem_type[] = {   "Program",
                     "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
                     "Null" };
 
-int check_program(is_node *node)
+prog_env *check_program(is_node *node)
 {
+	prog_env *prog = (prog_env*) malloc(sizeof(prog_env));
+	prog->global = NULL;
+	prog->methods = NULL;
+
 	if(node->type == Program)
-		check_class(node->child);
-	else
-		printf("erro - node 'Program' nao encontrado\n");
+	{
+		printf("no 'Program' encontrado\n");
+		check_class(node->child, prog);
 	
-	return 0;
+	} else
+		printf("no 'Program' nao encontrado\n");
+	
+	return prog;
 }
 
-void check_class(is_node *node)
+void check_class(is_node *node, prog_env *prog)
 {
 	while(node != NULL)
 	{
-		if(node->type == VarDecl)
-			check_type(node->child);
-		
-		else if(node->type == MethodDecl)
-			check_type(node->child);
-		
+		if(node->id)
+			printf("Encontrado no '%s' do tipo '%s'\n", node->id, sem_type[node->type]);
+		else
+			printf("Encontrado no do tipo '%s' sem id\n", sem_type[node->type]);
+
+		switch(node->type)
+		{
+			case Id: // nome da classe
+				printf("no 'Id' encontrado\n");
+				prog->global = insert_element(node->id, node->type, 0, 0);
+				printf("no 'Id' inserido na tabela\n");
+				break;
+
+			case VarDecl:
+				printf("no 'VarDecl' encontrado\n");
+				prog->global->next = insert_element(node->id, node->type, 0, 0);
+				check_type(node->child);
+				break;
+
+			case MethodDecl:
+				check_type(node->child);
+				break;
+				
+			default:
+				break;
+
+		}
 		node = node->next;
 	}
 }
+
 
 void check_type(is_node *node)
 {

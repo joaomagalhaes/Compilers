@@ -5,10 +5,26 @@
 #include <string.h>
 
 // Start
+is_node *insertProgram(is_node *progbody)
+{
+	is_node *node = (is_node*) malloc(sizeof(is_node));
+	
+	node->child = progbody;
+	node->next = NULL;
+	node->type = Program;
+	node->id = NULL;
+
+	return node;
+}
 
 // Program
-is_node *insertProgram(is_node *id, is_node *fieldsmethods)
+is_node *insertProgAux(is_node *id, is_node *fieldsmethods)
 {
+	if(fieldsmethods != NULL)
+		id->next = fieldsmethods;
+
+	return id;
+	/*
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 	
 	node->child = id;
@@ -20,6 +36,7 @@ is_node *insertProgram(is_node *id, is_node *fieldsmethods)
 	node->id = NULL;
 
 	return node;
+	*/
 }
 
 // FieldMethodDecl

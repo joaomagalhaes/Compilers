@@ -1,0 +1,17 @@
+class main
+{
+	public static void method()
+	{
+		int[] x;
+		x = new int[2][5];
+	}
+
+	static int s;
+	static int p;
+
+	public static void metho2()
+	{
+		int as;
+	}
+}
+

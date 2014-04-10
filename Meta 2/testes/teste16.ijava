@@ -1,0 +1,4 @@
+class main
+{
+	static new int[5][2];
+}

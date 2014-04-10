@@ -1,0 +1,8 @@
+class main
+{
+	static int l;
+	public static void teste() 
+	{
+		new int[5][2];	
+	}
+} 

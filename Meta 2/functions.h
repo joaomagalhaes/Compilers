@@ -1,9 +1,10 @@
 #include "structures.h"
 
 // Start
+is_node *insertProgram(is_node *progbody);
 
 // Program
-is_node *insertProgram(is_node *id, is_node *fieldsmethods);
+is_node *insertProgAux(is_node *id, is_node *fieldsmethods);
 
 // FieldMethodDecl
 

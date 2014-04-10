@@ -1,0 +1,15 @@
+class main
+{
+	public static void methodone()
+	{
+		int x;
+	}
+
+	public static void methodtwo()
+	{
+	}
+
+	public static  void methodthree()
+	{
+	}
+}

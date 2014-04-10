@@ -1,0 +1,15 @@
+class teste9
+{
+	
+	static int teste;
+
+	public static void main()
+	{
+		int i;
+	}
+
+	public static void lol()
+	{
+		int x;
+	}
+}

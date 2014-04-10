@@ -8,8 +8,8 @@
 #include "structures.h"
 #include "functions.h"
 #include "shows.h"
-#include "semantics.h"
-#include "symbol_table.h"
+//#include "semantics.h"
+//#include "symbol_table.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
@@ -21,7 +21,7 @@ int line, col, yyleng;
 char *yytext;
 
 is_node *myProgram = NULL;
-prog_env *mySemantic;
+//prog_env *mySemantic = NULL;
 
 %}
 
@@ -56,13 +56,13 @@ prog_env *mySemantic;
 
 %%
 
-Start:	Program		{ }
+Start:	Program		{ $$ = insertProgram($1); myProgram = $$; }
 		;
 
-Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$ = insertProgram(insert_ID($2), $4); myProgram=$$; }	
+Program:	CLASS ID OBRACE FieldMethodDecl CBRACE { $$ = insertProgAux(insert_ID($2), $4); }	
 			;
 
-FieldMethodDecl:	FieldDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
+FieldMethodDecl:	FieldDecl FieldMethodDecl	{ $$ = insertRepetition($1, $2); }
 				|	MethodDecl FieldMethodDecl 	{ $$ = insertRepetition($1, $2); }
 				|								{ $$ = NULL; }
 				;
@@ -122,12 +122,9 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP25 Expr 										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP3 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP4 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
-		|	Expr OSQUARE Expr CSQUARE 							{ $$ = insert_expr_squares_expr($1, $3); }
 		|	ID													{ $$ = insert_ID($1); }
 		|	INTLIT												{ $$ = insert_INTLIT($1); }
 		|	BOOLLIT												{ $$ = insert_BOOLLIT($1); }
-		|	NEW INT OSQUARE Expr CSQUARE 						{ $$ = insert_new_exp(NewInt, $4); }
-		|	NEW BOOL OSQUARE Expr CSQUARE						{ $$ = insert_new_exp(NewBool, $4); }
 		|	OCURV Expr CCURV									{ $$ = $2; /*review*/ }
 		|	Expr DOTLENGTH										{ $$ = insert_length($1); }
 		|	OP3 Expr											{ $$ = insert_Oper_Exp($1, $2); }
@@ -135,6 +132,9 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{ $$ = insert_ParseInt(insert_ID($3), $5); }
 		|	ID OCURV Args CCURV									{ $$ = insert_id_args(insert_ID($1), $3); }  
 		|	ID OCURV CCURV										{ $$ = insert_ID($1); }
+		|	Expr OSQUARE Expr CSQUARE  	                        { $$ = insert_expr_squares_expr($1, $3); }
+		|	NEW INT OSQUARE Expr CSQUARE                        { $$ = insert_new_exp(NewInt, $4); }
+		|   NEW BOOL OSQUARE Expr CSQUARE                       { $$ = insert_new_exp(NewBool, $4); }
 		;
 
 Args:		Expr CommaExpr				{ $$ = insertRepetition($1, $2); }
@@ -167,19 +167,26 @@ int main(int argc, char **argv)
 
 		if(show_ast == 1 && myProgram != NULL)
 			printAST(myProgram, 0);
-	
-		check_program(myProgram); // build symbol table			
+		/*	
+		mySemantic = check_program(myProgram);	
 		
-		if(show_table == 1)
-			printf("print symbol table\n");
+		if(show_table == 1)	
+			show_tables(mySemantic);
+		*/
 	}
 	else
 		printf("\nParsing not sucessfull\n");
+	
+	return 0;
 }
 
 void yyerror(char* s)
 {
-	printf("Line %d, col %d: %s: %s\n", line, col - yyleng, s, yytext);
+	if(strcmp(yytext, "") == 0)
+		printf("Line %d, col %d: %s: %s\n", line, col, s, yytext);
+	else
+		printf("Line %d, col %d: %s: %s\n", line, col - yyleng, s, yytext);
+	
 	exit(0);
 }
 
