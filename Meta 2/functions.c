@@ -7,6 +7,8 @@
 // Start
 is_node *insertProgram(is_node *progbody)
 {
+	// Start -> Program
+
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 	
 	node->child = progbody;
@@ -20,6 +22,9 @@ is_node *insertProgram(is_node *progbody)
 // Program
 is_node *insertProgAux(is_node *id, is_node *fieldsmethods)
 {
+
+	// Program -> CLASS ID OBRACE { FieldDecl | MethodDecl } CBRACE
+	
 	if(fieldsmethods != NULL)
 		id->next = fieldsmethods;
 
@@ -98,11 +103,11 @@ is_node *insertMethodDecl(is_node *type, is_node *id, is_node *params, is_node *
 			methodBody->child = stats;
 		}
 
-		node->next = NULL;
-		node->type = MethodDecl;
-		node->id = NULL;
 
 	} 
+			node->next = NULL;
+		node->type = MethodDecl;
+		node->id = NULL;
     return node;
 }
 
@@ -298,6 +303,18 @@ is_node *insertST_ret_exp_sem(is_node *expr)
 	return node;
 }
 
+is_node *insertST_ret_null()
+{
+	is_node *node = (is_node*) malloc(sizeof(is_node));
+
+	node->child = nullNode();
+	node->next = NULL;
+	node->type = Return;
+	node->id = NULL;
+
+	return node;
+} 
+
 // StatRep
 
 // Expr
@@ -413,7 +430,8 @@ is_node *insert_id_args(is_node *id, is_node *args)
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 
 	node->child = id;
-	id->next = args;
+	if(args!=NULL)
+		id->next = args;
 
 	node->type = Call;
 	node->id = NULL;

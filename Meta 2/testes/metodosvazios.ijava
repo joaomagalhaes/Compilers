@@ -1,0 +1,13 @@
+class main
+{
+	static int x;
+
+	public static void lol() 
+	{
+		return;
+	}
+
+	static boolean l;
+
+	public static int cenas(){}  
+}

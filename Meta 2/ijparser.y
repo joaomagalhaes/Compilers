@@ -109,7 +109,7 @@ Statement: 	OBRACE StatRep CBRACE								{ $$ = insertST_compoundstat($2); }
 		|	ID OSQUARE Expr CSQUARE ASSIGN Expr SEMIC			{ $$ = insertST_id_expr_assign_expr(insert_ID($1), $3, $6); }
 		|	ID ASSIGN Expr SEMIC								{ $$ = insertST_id_assign_exp_sem(insert_ID($1), $3); }
 		|	RETURN Expr SEMIC									{ $$ = insertST_ret_exp_sem($2); }
-		|	RETURN SEMIC										{ $$ = nullNode(); }
+		|	RETURN SEMIC										{ $$ = insertST_ret_null(); }
 		;
 
 StatRep:	Statement StatRep		{ $$ = insertRepetition($1, $2); }
@@ -131,7 +131,7 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); } 
 		|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{ $$ = insert_ParseInt(insert_ID($3), $5); }
 		|	ID OCURV Args CCURV									{ $$ = insert_id_args(insert_ID($1), $3); }  
-		|	ID OCURV CCURV										{ $$ = insert_ID($1); }
+		|	ID OCURV CCURV										{ $$ = insert_id_args(insert_ID($1), NULL); }
 		|	Expr OSQUARE Expr CSQUARE  	                        { $$ = insert_expr_squares_expr($1, $3); }
 		|	NEW INT OSQUARE Expr CSQUARE                        { $$ = insert_new_exp(NewInt, $4); }
 		|   NEW BOOL OSQUARE Expr CSQUARE                       { $$ = insert_new_exp(NewBool, $4); }

@@ -38,7 +38,8 @@ is_node *insertST_print_expr_sem(is_node *expr);
 is_node *insertST_id_expr_assign_expr(is_node *id, is_node *expr1, is_node *expr2);
 is_node *insertST_id_assign_exp_sem(is_node *id, is_node *exp);
 is_node *insertST_ret_exp_sem(is_node *expr);
- 
+is_node *insertST_ret_null();
+
 // StatRep
 
 // Expr
