@@ -34,6 +34,7 @@ typedef struct _t5
 
 void show_tables(prog_env* program);
 table_element *insert_element(char *ele_name, node_type ele_type, int ele_par, int ele_array_size);
+environment_list *insert_method(char *name, char *type);
 
 /*
 table_element *insert_el(char *str, char *str2, node_type t, int count, node_type  par, char *fu, char* pai, int npar);

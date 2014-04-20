@@ -11,7 +11,7 @@ char* sem_type[] = {   "Program",
                     "CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
                     "Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
                     "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
-                    "Null" };
+                    "Null", "method" };
 
 prog_env *check_program(is_node *node)
 {
@@ -20,41 +20,64 @@ prog_env *check_program(is_node *node)
 	prog->methods = NULL;
 
 	if(node->type == Program)
-	{
-		printf("no 'Program' encontrado\n");
 		check_class(node->child, prog);
-	
-	} else
-		printf("no 'Program' nao encontrado\n");
 	
 	return prog;
 }
 
 void check_class(is_node *node, prog_env *prog)
 {
-	while(node != NULL)
-	{
-		if(node->id)
-			printf("Encontrado no '%s' do tipo '%s'\n", node->id, sem_type[node->type]);
-		else
-			printf("Encontrado no do tipo '%s' sem id\n", sem_type[node->type]);
+	table_element *new;
+	environment_list *new_l;
+	table_element *prog_aux;
+	environment_list* env_aux = NULL;
 
+	while(node != NULL)
+	{	
 		switch(node->type)
 		{
 			case Id: // nome da classe
-				printf("no 'Id' encontrado\n");
+				printf("\nno 'Id' encontrado\n");
 				prog->global = insert_element(node->id, node->type, 0, 0);
-				printf("no 'Id' inserido na tabela\n");
 				break;
 
 			case VarDecl:
 				printf("no 'VarDecl' encontrado\n");
-				prog->global->next = insert_element(node->id, node->type, 0, 0);
-				check_type(node->child);
+				prog_aux = prog->global;
+				new = insert_element(node->child->next->id, node->child->type, 0, 0);
+				
+				while(prog_aux->next != NULL)
+					prog_aux = prog_aux->next;
+
+				prog_aux->next = new;	
 				break;
 
 			case MethodDecl:
-				check_type(node->child);
+				prog_aux = prog->global;
+				new = insert_element(node->child->next->id, (node_type) method, 0, 0);
+				
+				while(prog_aux->next != NULL)
+					prog_aux = prog_aux->next;
+
+				prog_aux->next = new;	
+
+				// -------
+
+				env_aux = prog->methods;
+				new_l = insert_method(node->child->next->id, sem_type[node->child->type] );
+				printf("oi --> %s", new_l->name);	
+				if(env_aux == NULL)
+					prog->methods = new_l;
+			
+				else
+				{
+					while(env_aux->next != NULL)
+						env_aux = env_aux->next;
+
+					env_aux->next = new_l;	
+				}
+				
+				check_methodDecl();
 				break;
 				
 			default:
@@ -65,6 +88,11 @@ void check_class(is_node *node, prog_env *prog)
 	}
 }
 
+void insert_global_table()
+{
+	table_element *new;
+
+}
 
 void check_type(is_node *node)
 {

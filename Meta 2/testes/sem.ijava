@@ -1,0 +1,15 @@
+class main
+{
+	static int z;
+	static int l;
+	static int x;
+	
+	public static int cenas()
+	{
+		int zd;
+	}
+
+	public static int merdas()
+	{
+	}
+}

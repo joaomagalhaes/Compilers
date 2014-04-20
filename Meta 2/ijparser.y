@@ -8,8 +8,8 @@
 #include "structures.h"
 #include "functions.h"
 #include "shows.h"
-//#include "semantics.h"
-//#include "symbol_table.h"
+#include "semantics.h"
+#include "symbol_table.h"
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
@@ -21,7 +21,7 @@ int line, col, yyleng;
 char *yytext;
 
 is_node *myProgram = NULL;
-//prog_env *mySemantic = NULL;
+prog_env *mySemantic = NULL;
 
 %}
 
@@ -167,12 +167,12 @@ int main(int argc, char **argv)
 
 		if(show_ast == 1 && myProgram != NULL)
 			printAST(myProgram, 0);
-		/*	
+			
 		mySemantic = check_program(myProgram);	
 		
 		if(show_table == 1)	
 			show_tables(mySemantic);
-		*/
+		
 	}
 	else
 		printf("\nParsing not sucessfull\n");
