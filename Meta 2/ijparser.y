@@ -151,7 +151,9 @@ int main(int argc, char **argv)
 	line = 1;
 	col = 1;
 	int i;
-
+	
+	//yyparse();
+	
 	if(yyparse() == 0)
 	{
 		int show_ast = 0, show_table = 0;

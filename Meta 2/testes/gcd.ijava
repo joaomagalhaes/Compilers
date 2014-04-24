@@ -1,5 +1,5 @@
 class gcd {
-  public static void main(String[] args) {
+ public static void main(String[] args) {
     int[] x;
     x = new int[2];
     x[0] = Integer.parseInt(args[0]);

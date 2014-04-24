@@ -77,7 +77,7 @@ void check_class(is_node *node, prog_env *prog)
 					env_aux->next = new_l;	
 				}
 				
-				check_methodDecl();
+				//check_methodDecl();
 				break;
 				
 			default:
