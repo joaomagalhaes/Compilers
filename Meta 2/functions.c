@@ -4,11 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-// Start
+// Start -> Program
 is_node *insertProgram(is_node *progbody)
 {
-	// Start -> Program
-
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 	
 	node->child = progbody;
@@ -19,36 +17,16 @@ is_node *insertProgram(is_node *progbody)
 	return node;
 }
 
-// Program
+// Program -> CLASS ID OBRACE { FieldDecl | MethodDecl } CBRACE
 is_node *insertProgAux(is_node *id, is_node *fieldsmethods)
 {
-
-	// Program -> CLASS ID OBRACE { FieldDecl | MethodDecl } CBRACE
-	
 	if(fieldsmethods != NULL)
 		id->next = fieldsmethods;
 
 	return id;
-	/*
-	is_node *node = (is_node*) malloc(sizeof(is_node));
-	
-	node->child = id;
-	if(fieldsmethods!= NULL)
-		id->next = fieldsmethods;
-
-	node->next = NULL;
-	node->type = Program;
-	node->id = NULL;
-
-	return node;
-	*/
 }
 
-// FieldMethodDecl
-
-// FieldDecl
-
-// MethodDecl
+// MethodDecl -> PUBLIC STATIC (Type | VOID) ID OCURV [ FormalParams ] CCURV OBRACE { VarDecl } { Statement } CBRACE
 is_node *insertMethodDecl(is_node *type, is_node *id, is_node *params, is_node *varDecl, is_node *stats)
 {
 	int changes = 0;
@@ -86,14 +64,13 @@ is_node *insertMethodDecl(is_node *type, is_node *id, is_node *params, is_node *
 		
 	if(varDecl != NULL)
 		methodBody->child = varDecl;
-	
+		
 	// adicionar filhos methodBody
 	if(stats != NULL && varDecl == NULL)
 		methodBody->child = stats;
 	else if(stats != NULL)
 		varDecl->next = stats;
 	
-
 	// adicionar no MethodDecl
 	node->next = NULL;
 	node->type = MethodDecl;
@@ -101,9 +78,6 @@ is_node *insertMethodDecl(is_node *type, is_node *id, is_node *params, is_node *
     return node;
 }
 
-// MethodVarDecl
-
-// FormalParams
 is_node *insertFormalParams1(is_node *type, is_node *id)
 {
 	is_node *node = (is_node*) malloc(sizeof(is_node));
@@ -122,7 +96,6 @@ is_node *insertFormalParams1(is_node *type, is_node *id)
 
 	return MethodParamsnode;	
 }
-
 
 is_node *insertFormalParams2(is_node *type, is_node *id, is_node *moreNodes)
 {
@@ -197,11 +170,15 @@ is_node *insertST_compoundstat(is_node *stat)
         }
         else
             return stat;
-    
     } else
-        node = nullNode();
-    
-    return node;
+	{	
+		node->child = NULL;
+        node->next = NULL;
+        node->type = NoNode;
+        node->id = NULL;
+	}
+
+	return node;    
 }
 
 is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2)
@@ -297,7 +274,7 @@ is_node *insertST_ret_null()
 {
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 
-	node->child = nullNode();
+	node->child = NULL;
 	node->next = NULL;
 	node->type = Return;
 	node->id = NULL;

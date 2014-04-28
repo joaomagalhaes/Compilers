@@ -10,7 +10,7 @@ char* types[] = {	"Program",
 					"CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
 					"Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
 					"Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
- 				    "Null" };
+ 				    "Null", "NoNode" };
 
 void printAST(is_node* node, int tabs)
 {
@@ -20,7 +20,7 @@ void printAST(is_node* node, int tabs)
 	
 	if(node->id)
 		printf("%s(%s)\n", types[node->type], node->id);
-	else
+	else if(node->type!=NoNode)
 		printf("%s\n", types[node->type]);
 
 	if(node->child)

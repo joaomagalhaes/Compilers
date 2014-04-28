@@ -9,7 +9,7 @@ typedef enum
 	CompoundStat, IfElse, Print, Return, Store, StoreArray, While,
 	Or, And, Eq, Neq, Lt, Gt, Leq, Geq, Add, Sub, Mul, Div, Mod, Not, Minus, Plus, Length, LoadArray, Call, NewInt, NewBool, ParseArgs,
 	Int, Bool, IntArray, BoolArray, StringArray, Void, Id, IntLit, BoolLit,
-	Null, method
+	Null,  NoNode, method
 }node_type;
 
 typedef struct _a3

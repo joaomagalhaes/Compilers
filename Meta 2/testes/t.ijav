@@ -1,0 +1,14 @@
+class funcao{
+	static int a, b;
+	public static void main(int a, int b){
+		return;
+		{}
+		{ { return TRUE;} }
+		return f();	
+
+
+	return a.length;
+	
+	return Integer.parseInt(args[0]);
+	}
+}

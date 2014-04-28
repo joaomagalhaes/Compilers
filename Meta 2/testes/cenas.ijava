@@ -1,7 +1,9 @@
 class main
 {
-	public static void cenas()
-	{		
-		{{{ return; } return; }}
+	public static int cenas()
+	{
+		int h;
+		{}
+		x = 3;
 	}
 }

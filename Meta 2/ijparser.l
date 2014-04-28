@@ -97,17 +97,17 @@ int line = 1, col = 1, lineAux, colAux;
 [0-9]+|0x[a-fA-F0-9]+			{ col += yyleng; yylval.string = (char*) strdup(yytext); return INTLIT; }
 
 "//".*							;
-"/*"							{ BEGIN COMMENT; lineAux = line; colAux = col; }
+"/*"							{ BEGIN COMMENT; lineAux = line; colAux = col; col += yyleng; }
 <COMMENT>.						{ col += yyleng; }
 <COMMENT>"\n"					{ line++; col = 1; }
-<COMMENT><<EOF>>				{ printf("Line %d, col %d: unterminated comment\n", lineAux, colAux); return 0; }
-<COMMENT>"*/"					{ BEGIN 0; col += 2; }
+<COMMENT><<EOF>>				{ col += yyleng; printf("Line %d, col %d: unterminated comment\n", lineAux, colAux); return 0; }
+<COMMENT>"*/"					{ BEGIN 0; col += yyleng; }
 
 "\n"							{ line++; col = 1; } 
 [ \t\f\r]						{ col += yyleng; }
 .								{ printf("Line %d, col %d: illegal character ('%c')\n", line, col, yytext[0]); col += yyleng; }
 
-<<EOF>>							{ yyterminate(); }
+<<EOF>>							{ col+= yyleng; yyterminate(); }
 
 %%
 

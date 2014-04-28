@@ -1,0 +1,9 @@
+class main
+{
+
+	public static int metodo()
+{
+
+	x = new int[6][6];
+}
+}
