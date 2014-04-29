@@ -55,21 +55,33 @@ is_node *insertMethodDecl(is_node *type, is_node *id, is_node *params, is_node *
 	methodBody->type = MethodBody;
 	methodBody->id = NULL;
 	methodBody->next = NULL;
+	methodBody->child = NULL;
     
 	// adicionar MethodBody
 	if(changes == 1)
 		params->next = methodBody;
 	else
 		methodParams->next = methodBody;
-		
-	if(varDecl != NULL)
+
+	// adicionar as declaracoes de variaveis
+	if(varDecl != NULL) 
+	{
+		is_node *aux, *aux2;
 		methodBody->child = varDecl;
-		
-	// adicionar filhos methodBody
-	if(stats != NULL && varDecl == NULL)
-		methodBody->child = stats;
-	else if(stats != NULL)
-		varDecl->next = stats;
+		if(stats != NULL) // caso as stats forem NULL nao ha necessidade de consumir os irmaos dos VarDecls
+		{
+			aux = varDecl;
+			while(aux->next != NULL)
+				aux = aux->next;
+	
+            aux->next = stats;	
+		}
+	   
+	} else // caso nao haja Declaracoes de Variaveis, adicionar Statements
+	{
+		if(stats != NULL)
+			methodBody->child = stats;
+	}
 	
 	// adicionar no MethodDecl
 	node->next = NULL;
@@ -120,7 +132,7 @@ is_node *insertFormalParams2(is_node *type, is_node *id, is_node *moreNodes)
 }
 
 // CommaTypeID
-is_node *insertFPRepetition(is_node *type, is_node *id)
+is_node *insertFPRepetition(is_node *type, is_node *id, is_node *extra_node)
 {
 	is_node *node = (is_node*) malloc(sizeof(is_node));
 
@@ -130,6 +142,9 @@ is_node *insertFPRepetition(is_node *type, is_node *id)
 	node->type = ParamDeclaration;
 	node->id = NULL;
 
+	if(extra_node != NULL)
+		node->next = extra_node;		
+	
 	return node;
 }
 
@@ -183,8 +198,11 @@ is_node *insertST_compoundstat(is_node *stat)
 
 is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2)
 {
-	is_node *node = (is_node*) malloc(sizeof(is_node));
+	// if (expr) { stat } else { stat2}
 
+	is_node *node = (is_node*) malloc(sizeof(is_node));
+	node->type = IfElse;
+	node->id = NULL;
 	node->child = expr;
 
 	int change = 0;
@@ -193,15 +211,16 @@ is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2)
 		expr->next = stat;
 		change = 1;
 	}
-
+	
 	if(stat2 != NULL && change == 1)
 		stat->next = stat2;
-	else
+	else if(stat2 != NULL)
 		expr->next = stat2;
-
-	node->type = IfElse;
-	node->id = NULL;
-
+	else if(change == 1)
+		stat->next = nullNode();
+	else
+		expr->next = nullNode();
+		
 	return node;
 }
 

@@ -21,7 +21,7 @@ is_node *insertFormalParams1(is_node *type, is_node *id);
 is_node *insertFormalParams2(is_node *type, is_node *id, is_node *moreNodes);
 
 // CommaTypeID
-is_node *insertFPRepetition(is_node *type, is_node *id);
+is_node *insertFPRepetition(is_node *type, is_node *id, is_node *extra_node);
 
 // VarDecl
 

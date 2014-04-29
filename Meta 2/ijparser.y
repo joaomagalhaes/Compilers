@@ -84,7 +84,7 @@ FormalParams:	STRING OSQUARE CSQUARE ID		{ $$ = insertFormalParams1(insertType(S
 			|	Type ID CommaTypeID				{ $$ = insertFormalParams2($1, insert_ID($2), $3); }
 			;
 
-CommaTypeID:	COMMA Type ID CommaTypeID		{ $$ = insertFPRepetition($2, insert_ID($3)); }
+CommaTypeID:	COMMA Type ID CommaTypeID		{ $$ = insertFPRepetition($2, insert_ID($3), $4); }
 			|									{ $$ = NULL; }
 			;	
 
@@ -158,8 +158,6 @@ int main(int argc, char **argv)
 {
 	int i;
 	
-	//yyparse();
-
 	if(yyparse() == 0)
 	{
 		int show_ast = 0, show_table = 0;
@@ -176,23 +174,17 @@ int main(int argc, char **argv)
 		if(show_ast == 1 && myProgram != NULL)
 			printAST(myProgram, 0);
 		
-		/*
 		mySemantic = check_program(myProgram);	
 		
 		if(show_table == 1)	
 			show_tables(mySemantic);
-		*/
 	}
 	
 	return 0;
 }
 
 void yyerror(char* s)
-{	/*
-	if(strcmp(yytext, "") == 0)
-		printf("Line %d, col %d: %s: %s\n", line, col, s, yytext);
-	else
-	*/
+{
 	printf("Line %d, col %d: %s: %s\n", line, col - yyleng, s, yytext);
 	exit(0);
 }

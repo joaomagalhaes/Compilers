@@ -37,12 +37,10 @@ void check_class(is_node *node, prog_env *prog)
 		switch(node->type)
 		{
 			case Id: // nome da classe
-				printf("\nno 'Id' encontrado\n");
 				prog->global = insert_element(node->id, node->type, 0, 0);
 				break;
 
 			case VarDecl:
-				printf("no 'VarDecl' encontrado\n");
 				prog_aux = prog->global;
 				new = insert_element(node->child->next->id, node->child->type, 0, 0);
 				
@@ -65,7 +63,6 @@ void check_class(is_node *node, prog_env *prog)
 
 				env_aux = prog->methods;
 				new_l = insert_method(node->child->next->id, sem_type[node->child->type] );
-				printf("oi --> %s", new_l->name);	
 				if(env_aux == NULL)
 					prog->methods = new_l;
 			

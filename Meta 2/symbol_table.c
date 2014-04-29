@@ -13,7 +13,7 @@ char* st_types[] = {   "Program",
                     "CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
                     "Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
                     "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
-                    "Null", "method" };
+                    "Null", "NoNode", "method" };
 			
 void show_tables(prog_env* program)
 {
@@ -21,7 +21,7 @@ void show_tables(prog_env* program)
 	table_element *aux;
 	environment_list* env_l = program->methods;
 
-	printf("\n===== Class %s Symbol Table =====\n", ele->id);
+	printf("===== Class %s Symbol Table =====\n", ele->id);
 	ele = ele->next;	
 	aux = ele;
 	while(aux != NULL)
@@ -29,7 +29,7 @@ void show_tables(prog_env* program)
 		printf("%s\t%s\n", aux->id, st_types[aux->type]);
 		aux=aux->next;
 	}
-	
+	/*	
 	while(env_l != NULL)
 	{
 		printf("===== Method %s Symbol Table =====\n", env_l->name);
@@ -38,7 +38,7 @@ void show_tables(prog_env* program)
 		table_element *aux_local=env_l->locals;
 		while(aux_local != NULL)
 		{	
-			printf("%s\t%s", aux_local->id, st_types[aux_local->type]);
+		//	printf("%s\t%s", aux_local->id, st_types[aux_local->type]);
 			if(aux_local->param==1)
 				printf("\tparam\n");
 			else
@@ -47,7 +47,7 @@ void show_tables(prog_env* program)
 			aux_local=aux_local->next;
 		}
 	}
-
+	*/
 }
 
 table_element *insert_element(char *ele_name, node_type ele_type, int ele_par, int ele_array_size)
@@ -63,7 +63,7 @@ table_element *insert_element(char *ele_name, node_type ele_type, int ele_par, i
 
 environment_list *insert_method(char *name, char *type)
 {
-	printf(">>>>>> nome da metodo: %s", name);
+	//printf(">>>>>> nome da metodo: %s", name);
 	environment_list *new_list = (environment_list*) malloc(sizeof(environment_list));
 	strcpy(new_list->name, name);
 	strcpy(new_list->tipo, type);

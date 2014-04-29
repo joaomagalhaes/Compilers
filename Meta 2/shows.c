@@ -13,15 +13,19 @@ char* types[] = {	"Program",
  				    "Null", "NoNode" };
 
 void printAST(is_node* node, int tabs)
-{
-	int i;
-	for(i = 0; i < tabs; i++)
-		printf("  ");
-	
-	if(node->id)
-		printf("%s(%s)\n", types[node->type], node->id);
-	else if(node->type!=NoNode)
-		printf("%s\n", types[node->type]);
+{	
+	//printf("tabs > %d\n", tabs);	
+	if(node->type != NoNode)
+	{	
+		int i;
+		for(i = 0; i < tabs; i++)
+			printf("  ");
+
+		if(node->id)
+			printf("%s(%s)\n", types[node->type], node->id);
+		else
+			printf("%s\n", types[node->type]);
+	}
 
 	if(node->child)
 		printAST(node->child, tabs + 1);

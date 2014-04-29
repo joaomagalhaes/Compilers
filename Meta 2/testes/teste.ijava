@@ -1,0 +1,9 @@
+class main
+{
+	static int x;
+	public static void lol()
+	{
+		System.out.println(a[0][0]);
+
+	}
+}
