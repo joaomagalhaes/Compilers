@@ -1,9 +1,23 @@
 class main
 {
-	static int x;
 	public static void lol()
 	{
-		System.out.println(a[0][0]);
+		// if com else
+		if(1)
+		{
+			x = 2;
+		} else {
+			y = 5;
+		}
+		
+		// if sem else
+		if(2)
+		{
+			v = 3;
+		}
 
+		// if sem else e que nao faz nada
+		if(3){}	
+			
 	}
 }

@@ -185,13 +185,9 @@ is_node *insertST_compoundstat(is_node *stat)
         }
         else
             return stat;
-    } else
-	{	
-		node->child = NULL;
-        node->next = NULL;
-        node->type = NoNode;
-        node->id = NULL;
-	}
+    }
+	else
+		return NULL;
 
 	return node;    
 }
@@ -204,23 +200,28 @@ is_node *insertST_if_else(is_node *expr, is_node *stat, is_node *stat2)
 	node->type = IfElse;
 	node->id = NULL;
 	node->child = expr;
-
-	int change = 0;
-	if(stat != NULL) 
+	
+	if(stat != NULL && stat2 != NULL) // o if faz algo e o else existe
+	{	
+		expr->next = stat;
+		stat->next = stat2;
+		
+	} else if(stat != NULL && stat2 == NULL) // o if faz algo e o else nao existe
 	{
 		expr->next = stat;
-		change = 1;
+		stat->next = nullNode();	
+	
+	} else if(stat == NULL && stat2 != NULL)
+	{
+		expr->next = nullNode();
+		expr->next->next = stat2;
+
+	} else // o if nao faz nada e o else nao existe
+	{
+		expr->next = nullNode();
+		expr->next->next = nullNode();
 	}
 	
-	if(stat2 != NULL && change == 1)
-		stat->next = stat2;
-	else if(stat2 != NULL)
-		expr->next = stat2;
-	else if(change == 1)
-		stat->next = nullNode();
-	else
-		expr->next = nullNode();
-		
 	return node;
 }
 
@@ -232,6 +233,8 @@ is_node *insertST_while_expr_stat(is_node *expr, is_node *stat)
 
 	if(stat != NULL)
 		expr->next = stat;
+	else
+		expr->next = nullNode();
 
 	node->type = While;
 	node->id = NULL;
@@ -484,6 +487,18 @@ is_node *insertRepetition(is_node *x, is_node *y)
 
     return x;
 }
+
+is_node *insertStatRepetition(is_node *stat, is_node *stat2)
+{
+	if(stat != NULL && stat2 != NULL)
+		stat->next = stat2;
+	
+	else if(stat == NULL && stat2 != NULL)
+		return stat2;
+	
+	return stat;
+}
+
 
 is_node *nullNode()
 {

@@ -1,14 +1,99 @@
-class funcao{
-	static int a, b;
-	public static void main(int a, int b){
-		return;
-		{}
-		{ { return TRUE;} }
-		return f();	
 
 
-	return a.length;
+
+class gcd {
+
+	static int fr;
+	static int tt;
+
+	public static void main(String[] args ) {
+			
+			int[] x,u; 
+			int[] y;
+			int[] i; 
+			boolean[] a;
+			boolean[] b;
+
+			boolean[] r,t;
+
+
+		if(klk_merda){
+			while(x[0]){
+				System.out.println(x[0]);
+			}
+			x=20;
+		}else{
+			x= ty;
+		}
+
+
+		if(klk_merda){
+			while(x[0]){
+				System.out.println(x[0]);
+			}
+			x=20;
+		}else{
+			x= ty;
+		}
+		x =a+b;
+
+		y = x.length;
+
+		if(!y>true){
+
+		}
+		x= f(a,b);
+
+
+
+
+
+		return x-y;
+
+
+
 	
-	return Integer.parseInt(args[0]);
+
+
+
+
+
+
+
 	}
+
+}	
+
+
+ 
+
+
+
+
+
+
+
+
+/*
+
+
+
+class gcd {
+public static void main(String[] args) {
+int[] x;
+x = new int[2];
+x[0] = Integer.parseInt(args[0]);
+x[1] = Integer.parseInt(args[1]);
+if (x[0] == 0)
+System.out.println(x[1]);
+else
+while (x[1] > 0) {
+if (x[0] > x[1])
+x[0] = x[0] - x[1];
+else
+x[1] = x[1] - x[0];
 }
+System.out.println(x[0]);
+}
+}
+*/

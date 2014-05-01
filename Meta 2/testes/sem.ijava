@@ -1,15 +1,24 @@
-class main
+class gcd
 {
-	static int z;
-	static int l;
-	static int x;
-	
-	public static int cenas()
-	{
-		int zd;
-	}
+	static boolean y, p;
 
-	public static int merdas()
+	public static void main(String[] args)
 	{
+		int x;
+	} 
+
+	public static int meth(int a, int b, boolean[] lol)
+	{
+		boolean[] vector1;
+		boolean[] vector2;
+
+		boolean[] vect1,vect2;
+		int a, b;
+		int[] xz;
+		boolean[] c;
+		x = 2;
+		
+		total = a + b;
+		x = foo(a,b,c);
 	}
 }

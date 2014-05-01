@@ -6,4 +6,4 @@ gcc -o exe *.c
 rm y.tab.h
 rm y.tab.c
 rm lex.yy.c
-rm exe
+

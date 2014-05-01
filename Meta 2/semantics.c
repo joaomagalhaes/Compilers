@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <string.h>
 
-char* sem_type[] = {   "Program",
-                    "VarDecl",
-                    "MethodDecl", "MethodParams", "MethodBody", "ParamDeclaration",
-                    "CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
-                    "Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
-                    "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
-                    "Null", "method" };
+char* sem_type[] = {    "Program",
+                        "VarDecl",
+                        "MethodDecl", "MethodParams", "MethodBody", "ParamDeclaration",
+                        "CompoundStat", "IfElse", "Print", "Return", "Store", "StoreArray", "While",
+                        "Or", "And", "Eq", "Neq", "Lt", "Gt", "Leq", "Geq", "Add", "Sub", "Mul", "Div", "Mod", "Not", "Minus", "Plus", "Length", "LoadArray", "Call", "NewInt", "NewBool", "ParseArgs",
+                        "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
+                        "Null" };
 
 prog_env *check_program(is_node *node)
 {
@@ -27,54 +27,36 @@ prog_env *check_program(is_node *node)
 
 void check_class(is_node *node, prog_env *prog)
 {
-	table_element *new;
-	environment_list *new_l;
-	table_element *prog_aux;
-	environment_list* env_aux = NULL;
-
+    is_node* aux;
+    char* aux_type;
+    
 	while(node != NULL)
 	{	
 		switch(node->type)
 		{
-			case Id: // nome da classe
-				prog->global = insert_element(node->id, node->type, 0, 0);
+			case Id: // nome da classe - inserir tabela global
+				insert_global_table(prog, node->id, "");
 				break;
 
-			case VarDecl:
-				prog_aux = prog->global;
-				new = insert_element(node->child->next->id, node->child->type, 0, 0);
+			case VarDecl: // variaveis globais - inserir tabela global
 				
-				while(prog_aux->next != NULL)
-					prog_aux = prog_aux->next;
+                aux_type = sem_type[node->child->type];
+                aux = node->child->next;
+                while(aux != NULL)
+                {
+                    insert_global_table(prog, aux->id, aux_type);
+                    aux = aux->next;
+                }
+                break;
 
-				prog_aux->next = new;	
-				break;
-
-			case MethodDecl:
-				prog_aux = prog->global;
-				new = insert_element(node->child->next->id, (node_type) method, 0, 0);
+			case MethodDecl: // declaracoes de metodos
+				// inserir tabela global
+				insert_global_table(prog, node->child->next->id, "method");
 				
-				while(prog_aux->next != NULL)
-					prog_aux = prog_aux->next;
-
-				prog_aux->next = new;	
-
-				// -------
-
-				env_aux = prog->methods;
-				new_l = insert_method(node->child->next->id, sem_type[node->child->type] );
-				if(env_aux == NULL)
-					prog->methods = new_l;
-			
-				else
-				{
-					while(env_aux->next != NULL)
-						env_aux = env_aux->next;
-
-					env_aux->next = new_l;	
-				}
+				// insere metodos na tabela methods
+				insert_methods_table(prog, node->child->next->id, sem_type[node->child->type] );
 				
-				//check_methodDecl();
+				check_methodDecl(prog, node->child);
 				break;
 				
 			default:
@@ -85,20 +67,123 @@ void check_class(is_node *node, prog_env *prog)
 	}
 }
 
-void insert_global_table()
+void check_methodDecl(prog_env* prog, is_node* node)
 {
-	table_element *new;
-
+    char* method_name = node->next->id;
+    
+    insert_method_elements(prog, method_name, sem_type[node->type], "return", 0);
+    
+    while(node != NULL)
+    {
+        switch(node->type)
+        {
+            case MethodParams:
+                check_methodParams(prog, method_name, node->child);
+                break;
+            
+            case MethodBody:
+                check_methodBody(prog, method_name, node->child);
+                break;
+                
+            default:
+                break;
+        }
+        node = node->next;
+    }
 }
 
-void check_type(is_node *node)
+void check_methodBody(prog_env* prog, char* name, is_node* node)
 {
-	while(node != NULL)
-	{
-		if(node->type == Int)
-			printf("descoberto int\n");
+    is_node* aux;
+    while(node != NULL)
+    {
+        if(node->type == VarDecl)
+        {
+            char* type_aux = sem_type[node->child->type];
+            aux = node->child->next;
+            while(aux != NULL)
+            {
+                insert_method_elements(prog, name, type_aux, aux->id, 0);
+                aux = aux->next;
+            }
+        }
+        
+        node = node->next;
+    }
+}
+
+void check_methodParams(prog_env* prog, char* name, is_node* node)
+{
+    while(node != NULL)
+    {
+        insert_method_elements(prog, name, sem_type[node->child->type], node->child->next->id, 1);
+        node = node->next;
+    }
+}
+
+void insert_method_elements(prog_env* prog, char* method_name, char* type, char* name, int par)
+{
+    /*
+    if(par == 1)
+        printf("vou inserir no metodo %s, o parametro %s, do tipo %s\n", method_name, name, type);
+    else
+        printf("vou inserir no metodo %s, a variavel %s, do tipo %s\n", method_name, name, type);
+    */
+    environment_list* methods = prog->methods;
+
+    while(methods != NULL)
+    {
+        if(strcmp(methods->name, method_name) == 0)
+        {
+            table_element* method_element = methods->locals;
+            table_element* prev = methods->locals;
+
+            if(methods->locals == NULL)
+                methods->locals = insert_element(name, type, par);
+            
+            else
+            {
+                while(method_element != NULL)
+                {
+                    prev = method_element;
+                    method_element = method_element->next;
+                }
+                prev->next = insert_element(name, type, par);
+            }
+        }
+        methods = methods->next;
+    }
+}
+
+void insert_methods_table(prog_env* prog, char* id, char* type)
+{
+	environment_list* temp;
+	temp = prog->methods;
 	
-		node = node->next;
+	if(prog->methods == NULL)
+		prog->methods = insert_method(id, type);
+	
+	else
+	{
+		while(temp->next != NULL)
+			temp = temp->next;
+		temp->next = insert_method(id, type);
+	}
+}
+
+void insert_global_table(prog_env* prog, char* id, char* type)
+{
+	table_element* temp;
+	temp = prog->global;
+	
+	if(prog->global == NULL)
+		prog->global = insert_element(id, type, 0);
+	
+	else
+	{
+		while(temp->next != NULL)
+			temp = temp->next;
+		temp->next = insert_element(id, type, 0);
 	}
 }
 

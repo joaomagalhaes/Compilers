@@ -57,5 +57,6 @@ is_node *insert_INTLIT(char* str);
 is_node *insert_BOOLLIT(char* str);
 is_node *insertType(node_type type);
 is_node *insertRepetition(is_node *x, is_node *y);
+is_node *insertStatRepetition(is_node *stat, is_node *stat2);
 is_node *nullNode();
 
