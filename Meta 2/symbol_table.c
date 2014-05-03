@@ -52,11 +52,11 @@ table_element *insert_element(char *ele_name, char* ele_type, int ele_par)
 	else if(strcmp(ele_type, "Void") == 0)
 		strcpy(new_symbol->type, "void");
 	else if(strcmp(ele_type, "Bool") == 0)
-		strcpy(new_symbol->type, "bool");
+		strcpy(new_symbol->type, "boolean");
 	else if(strcmp(ele_type, "IntArray") == 0)
 		strcpy(new_symbol->type, "int[]");
     else if(strcmp(ele_type, "BoolArray") == 0)
-		strcpy(new_symbol->type, "bool[]");
+		strcpy(new_symbol->type, "boolean[]");
     else if(strcmp(ele_type, "StringArray") == 0)
 		strcpy(new_symbol->type, "String[]");
 	else

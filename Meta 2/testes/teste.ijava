@@ -2,22 +2,7 @@ class main
 {
 	public static void lol()
 	{
-		// if com else
-		if(1)
-		{
-			x = 2;
-		} else {
-			y = 5;
-		}
-		
-		// if sem else
-		if(2)
-		{
-			v = 3;
-		}
-
-		// if sem else e que nao faz nada
-		if(3){}	
-			
+		boolean x;
+		boolean[] asd;	
 	}
 }
