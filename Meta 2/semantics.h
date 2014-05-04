@@ -20,3 +20,21 @@ void insert_method_elements(prog_env* prog, char* method_name, char* type, char*
 void check_methodParams(prog_env* prog, char* name, is_node* type);
 
 void check_methodBody(prog_env* prog, char* name, is_node* node);
+
+void check_defined(char* name, char* nameNew);
+
+void check_store(is_node* store, prog_env* prog, char* methodName);
+
+char* getType(char* nameP,prog_env* prog,char*methodName);
+
+int getParamN(prog_env* prog,char*called);
+
+char* getParambyPos(prog_env* prog,char*called,int pos);
+
+void check_semantic(is_node* myProgram, prog_env* mySemantic);
+
+void check_incompatible_assignment(is_node *store, prog_env* prog, char* methodName);
+
+void check_methodBody_sem(prog_env* prog, char* name, is_node* node);
+
+void check_methodParams_sem(prog_env* prog, char* name, is_node* node);

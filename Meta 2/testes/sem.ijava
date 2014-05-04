@@ -9,14 +9,15 @@ class gcd
 
 	public static int meth(int a, int b, boolean[] lol)
 	{
-		boolean[] vector1;
-		boolean[] vector2;
+		x = cenas();
+		//boolean[] vector1;
+		//boolean[] vector2;
 
-		boolean[] vect1,vect2;
-		int a, b;
-		int[] xz;
-		boolean[] c;
-		x = 2;
+		//boolean[] vect1,vect2;
+		//int a, b;
+		//int[] xz;
+		//boolean[] c;
+		//x = 2;
 		
 		total = a + b;
 		x = foo(a,b,c);

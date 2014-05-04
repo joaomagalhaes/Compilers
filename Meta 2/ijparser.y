@@ -122,17 +122,8 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP25 Expr 										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP3 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP4 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
-	/*	|	ID													{ $$ = insert_ID($1); }
-		|	INTLIT												{ $$ = insert_INTLIT($1); }
-		|	BOOLLIT												{ $$ = insert_BOOLLIT($1); }
-		|	OCURV Expr CCURV									{ $$ = $2; review }*/
-	/*	|	Expr DOTLENGTH										{ $$ = insert_length($1); }*/
 		|	OP3 Expr											{ $$ = insert_Oper_Exp($1, $2); }
-		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); } 
-	/*	|	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{ $$ = insert_ParseInt(insert_ID($3), $5); }
-		|	ID OCURV Args CCURV									{ $$ = insert_id_args(insert_ID($1), $3); }
-		|	ID OCURV CCURV										{ $$ = insert_id_args(insert_ID($1), NULL); }
-		|	ExprAux OSQUARE Expr CSQUARE  	                    { $$ = insert_expr_squares_expr($1, $3); } */
+		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); }
 		|	NEW INT OSQUARE Expr CSQUARE                        { $$ = insert_new_exp(NewInt, $4); }
 		|   NEW BOOL OSQUARE Expr CSQUARE                       { $$ = insert_new_exp(NewBool, $4); }
         |   ExprAux                                             { $$ = $1; }
@@ -146,8 +137,8 @@ ExprAux:  	  	ID                                                  { $$ = insert_
 	        |   ExprAux OSQUARE Expr CSQUARE                        { $$ = insert_expr_squares_expr($1, $3); }
             |	Expr DOTLENGTH										{ $$ = insert_length($1); }
             |	PARSEINT OCURV ID OSQUARE Expr CSQUARE CCURV 		{ $$ = insert_ParseInt(insert_ID($3), $5); }
-            |	OCURV Expr CCURV									{ $$ = $2; /*review*/ }
-;
+            |	OCURV Expr CCURV									{ $$ = $2; }
+            ;
 
 Args:		Expr CommaExpr				{ $$ = insertRepetition($1, $2); }
 		;
@@ -178,11 +169,11 @@ int main(int argc, char **argv)
 		if(show_ast == 1 && myProgram != NULL)
 			printAST(myProgram, 0);
         
-		mySemantic = check_program(myProgram);	
+		mySemantic = check_program(myProgram); // construccao da tabela de simbolos
+        check_semantic(myProgram, mySemantic); // verificacao de erros semanticos
 		
 		if(show_table == 1)	
 			show_tables(mySemantic);
-        
 	}
 	
 	return 0;

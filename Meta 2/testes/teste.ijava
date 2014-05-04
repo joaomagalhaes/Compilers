@@ -1,8 +1,10 @@
 class main
 {
+//	static boolean x;
+	
 	public static void lol()
-	{
+	{		
 		boolean x;
-		boolean[] asd;	
+		x = 1;
 	}
 }

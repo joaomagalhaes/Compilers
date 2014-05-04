@@ -1,34 +1,37 @@
-class main
-{
-	static int l;
-	static boolean x;
-	
-	public static int cenas(String[] x)
-	{
-		int h;
-		int x;
-		boolean y;
-		int[] p;
-		boolean re,ds;
-		x = 3;
-		{ }
-		x = 5;
-		if(x == 4)
-		{	
-		}
+class declarations {
 
-		while(1)
-		{
-			if(x == 5)
-			{
-				System.out.println(x);
-			}
-			System.out.println(y);
-		}
-		x = true;
-		System.out.println(f(a));
-		
+	static int var1,var2,var3,var4;
+	
+	
+	static int var1,var2,var3;
+
+	static boolean var4;
+	static boolean var5,var6,var7;
+
+	static int[] array1;
+	static int[] array2;
+	static int[] array3,array4;
+
+	static boolean[] array5;
+	static boolean[] array6;
+	static boolean[] array7,array8;
+
+
+	public static int method(int a, int b, int c){
+
 	}
 
-	static int sad;
+	
+	public static void main(String[] args){
+		 int firstvardeclmethod;
+		 int secondvardeclmethod;
+	}
+	
+
+
+	public static int method2(){
+
+	}
+
+
 }
