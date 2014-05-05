@@ -154,7 +154,7 @@ void insert_global_table(prog_env* prog, char* id, char* type)
 	{
 		while(temp->next != NULL)
         {
-            check_defined(temp->next->name,id);
+            check_defined(temp->next->name, id);
 			temp = temp->next;
         }
 		temp->next = insert_element(id, type, 0);
@@ -198,7 +198,7 @@ void insert_method_elements(prog_env* prog, char* method_name, char* type, char*
             {
                 while(method_element != NULL)
                 {
-                    check_defined(method_element->name,name);
+                    check_defined(method_element->name, name);
                     prev = method_element;
                     method_element = method_element->next;
                 }
@@ -227,14 +227,12 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
         {
             aux2 = aux->child;
             method_name = aux->child->next->id;
-            printf("estou no metodo de nome %s\n", method_name);
+            //printf("estou no metodo de nome %s\n", method_name);
             
             while(aux2 != NULL)
             {
-                if(aux2->type == MethodParams)
-                    check_methodParams_sem(mySemantic, method_name, aux2->child);
-                else if(aux2->type == MethodBody)
-                    check_methodBody_sem(mySemantic, method_name, aux2->child);
+                if(aux2->type == MethodBody)
+                    rec_semantic_verification(mySemantic, method_name, aux2->child);
                 
                 aux2 = aux2->next;
             }
@@ -243,11 +241,10 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
     }
 }
 
-// Recebe filhos do no 'MethodBody'
-// Caso sejam Store verifica se tipos sao incompativeis
-void check_methodBody_sem(prog_env* prog, char* name, is_node* node)
+// Funcao recursiva que recebe um no e verifica os seus irmaos
+// Dependendo do tipo de no, faz as verificacoes semanticas necessarias
+void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 {
-    printf("entrei\n");
     is_node* aux;
     char* type_aux;
     
@@ -255,75 +252,105 @@ void check_methodBody_sem(prog_env* prog, char* name, is_node* node)
     {
         if(node->type == Store)
         {
-            check_store(node->child, prog, name);
-            check_incompatible_assignment(node->child, prog, name);
+            printf("verificar no Store\n");
+            //check_store(node->child, prog, name);
+            //check_incompatible_assignment(node->child, prog, name);
+
+        } else if(node->type == StoreArray)
+        {
+            printf("verificar no StoreArray\n");
+            //check_incompatible_assignment_array(node->child, prog, name);
+            
+        } else if(node->type == IfElse)
+        {
+            printf("verificar no IfElse\n");
+            
+        } else if(node->type == While)
+        {
+            printf("verificar no While\n");
+        
+        } else if(node->type == CompoundStat)
+        {
+            printf("verificar no CompoundStat\n");
+            
+        } else if(node->type == Print)
+        {
+            printf("verificar no Print\n");
+            
+        } else if(node->type == Return)
+        {
+            printf("verificar no Return\n");
+        
+        } else if(node->type == Call)
+        {
+            printf("verificar no Call\n");
+            check_call(node->child, prog, name);
+            
+        } else if(node->type == LoadArray)
+        {
+            printf("verificar no LoadArray\n");
         }
+        
+        rec_semantic_verification(prog, name, node->child);
         node = node->next;
     }
 }
 
-void check_methodParams_sem(prog_env* prog, char* name, is_node* node)
-{}
-
-
-
-// recebe um no Store, verifica se os tipos sao compativeis
-void check_incompatible_assignment(is_node *store, prog_env* prog, char* methodName)
+// (1) Cannot find symbol %s
+void check_call(is_node* store, prog_env* prog, char* methodName)
 {
-    printf("a verificar compatibilidade entre a variavel %s e o objeto com o tipo %s\n", store->id, sem_type[store->next->type]);
+    
+}
 
-    // procura a variavel nos globais
-    table_element* global;
-    global = prog->global;
+
+
+// (3) Incompatible type in assignment to %s (got %s, required %s)
+// recebe um no Store, verifica se os tipos sao compativeis
+void check_incompatible_assignment(is_node *store, prog_env* prog, char* method_name)
+{
+    char* type1 = getType(store->id, prog, method_name);
+    char* type2 = typeCast(sem_type[store->next->type]);
     
-    while(global != NULL)
+    printf("No Store detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", store->id, type1, type2);
+
+    if(strcmp(type1, type2) != 0)
     {
-        if(strcmp(global->name, store->id) == 0)
-        {
-            if(global->type != sem_type[store->next->type])
-            {
-                printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, sem_type[store->next->type], global->type);
-                exit(0);
-            }
-        }
-        
-        global = global->next;
-    }
-    
-    // procura a variavel no metodo
-    environment_list* methods = prog->methods;
-    
-    while(methods != NULL)
-    {
-        if(strcmp(methods->name, methodName) == 0)
-        {
-            table_element* method_element = methods->locals;
-            
-            while(method_element != NULL)
-            {
-                if(strcmp(method_element->name, store->id) == 0)
-                {
-                    if(method_element->type != sem_type[store->next->type])
-                    {
-                        printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, sem_type[store->next->type], method_element->type);
-                        exit(0);
-                    }
-                }
-                method_element = method_element->next;
-            }
-        }
-        methods = methods ->next;
+        printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, type2, type1);
+        exit(0);
     }
 }
 
+// (4) Incompatible type in assignment to %s[] (got %s, required %s)
+// recebe um no StoreArray, verifica se os tipos sao compativeis
+void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, char* method_name)
+{
+    char* type1 = getType(storeArray->id, prog, method_name);
+    char* type2 = typeCast(sem_type[storeArray->next->next->type]);
+    
+    if(strcmp(type1, "int[]") == 0)
+        type1 = "int";
+    else if(strcmp(type1, "boolean[]") == 0)
+        type1 = "boolean";
+
+    printf("No StoreArray detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", storeArray->id, type1, type2);
+    
+    if(strcmp(type1, type2) != 0)
+    {
+        printf("Incompatible type in assigment to %s[] (got %s, required %s)\n", storeArray->id, type2, type1);
+        exit(0);
+    }
+}
+
+// (10) Symbol %s already defined
 void check_defined(char* name, char* nameNew)
 {
-	if(strcmp(name,nameNew) == 0){
+	if(strcmp(name,nameNew) == 0)
+    {
 		printf ("Symbol %s already defined\n", name);
 		exit(0);
 	}
-    
 }
+
 
 void check_store(is_node* store, prog_env* prog, char* methodName)
 {
@@ -416,39 +443,7 @@ void check_store(is_node* store, prog_env* prog, char* methodName)
     
 }
 
-//devolve tipo de uma variavel, caso nao exista devolve NULL
-char* getType(char* nameP,prog_env* prog,char*methodName)
-{
-    
-	table_element* temp;
-	temp = prog->global;
-    
-	environment_list* aux;
-	aux = prog->methods;
-    
-	//verifica variaveis globais
-	while(temp!=NULL){
-		if(strcmp(temp->name,nameP)==0)
-			return temp->type;
-		temp=temp->next;
-	}
-    
-	//verifica variaveis locais do metodo em questao
-	while(aux!=NULL){
-		if(strcmp(aux->name,methodName)==0){
-			table_element* local = aux->locals;
-			while(local!=NULL){
-				if(strcmp(local->name,nameP)==0)
-					return local->type;
-				local=local->next;
-			}
-			return NULL;
-		}
-		aux=aux->next;
-	}
-    
-	return NULL;
-}
+
 
 //devolve o numero de parametros de um determinado metodo
 int getParamN(prog_env* prog,char*called)
@@ -495,5 +490,76 @@ char* getParambyPos(prog_env* prog,char*called,int pos)
 	}
 	return NULL;
 }
+
+// recebe nome de variavel e nome de metodo em que pode estar
+// devolve o tipo da variavel caso exista
+// devolve NULL caso nao exista
+char* getType(char* nameP, prog_env* prog, char* methodName)
+{
+	table_element* temp;
+	temp = prog->global;
+    
+	environment_list* aux;
+	aux = prog->methods;
+    
+	// verifica variaveis globais
+	while(temp != NULL)
+    {
+		if(strcmp(temp->name, nameP) == 0)
+			return temp->type;
+		temp = temp->next;
+	}
+    
+	// verifica variaveis locais do metodo em questao
+	while(aux != NULL)
+    {
+		if(strcmp(aux->name, methodName) == 0)
+        {
+			table_element* local = aux->locals;
+			while(local != NULL)
+            {
+				if(strcmp(local->name, nameP) == 0)
+					return local->type;
+				local = local->next;
+			}
+			return NULL;
+		}
+		aux = aux->next;
+	}
+	return NULL;
+}
+
+// cast entre tipos na AST e tipos da tabela de simbolo
+char* typeCast(char* type)
+{
+    if(strcmp(type, "IntLit") == 0)
+        return "int";
+    else if(strcmp(type, "BoolLit") == 0)
+        return "boolean";
+    else if(strcmp(type, "NewInt") == 0)
+        return "int";
+    else if(strcmp(type, "NewBool") == 0)
+        return "boolean";
+    else if(strcmp(type, "Int") == 0)
+        return "int";
+    else if(strcmp(type, "Bool") == 0)
+        return "boolean";
+    else if(strcmp(type, "Void") == 0)
+        return "void";
+    else if(strcmp(type, "IntArray") == 0)
+        return "int[]";
+    else if(strcmp(type, "BoolArray") == 0)
+        return "boolean[]";
+    else if(strcmp(type, "StringArray") == 0)
+        return "String[]";
+    else
+    {
+        printf("erro na func typeCast\n");
+        return NULL;
+    }
+}
+
+
+
 
 

@@ -17,9 +17,7 @@ void insert_methods_table(prog_env* prog, char* id, char* type);
 // inserir um elemento num metodo
 void insert_method_elements(prog_env* prog, char* method_name, char* type, char* name, int par);
 
-void check_methodParams(prog_env* prog, char* name, is_node* type);
-
-void check_methodBody(prog_env* prog, char* name, is_node* node);
+void rec_semantic_verification(prog_env* prog, char* name, is_node* node);
 
 void check_defined(char* name, char* nameNew);
 
@@ -35,6 +33,14 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic);
 
 void check_incompatible_assignment(is_node *store, prog_env* prog, char* methodName);
 
-void check_methodBody_sem(prog_env* prog, char* name, is_node* node);
+void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, char* method_name);
 
-void check_methodParams_sem(prog_env* prog, char* name, is_node* node);
+void check_methodBody(prog_env* prog, char* name, is_node* node);
+
+void check_methodParams(prog_env* prog, char* name, is_node* node);
+
+char* typeCast(char* type);
+
+void check_call(is_node* store, prog_env* prog, char* methodName);
+
+

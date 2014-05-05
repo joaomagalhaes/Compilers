@@ -1,5 +1,7 @@
 class teste1
 {
+	static int x;
+	static boolean x;
 	public static int main()
 	{
 		if(x==3){}

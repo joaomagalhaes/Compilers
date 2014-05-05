@@ -1,0 +1,17 @@
+class compiladores
+{
+	static int y;
+	public static int main()
+	{
+		//int x;
+		int[] x;
+
+		x = 3+2;
+		/*if(1) 
+		{ 
+			x[1] = true;
+		}*/
+	}
+
+	
+}
