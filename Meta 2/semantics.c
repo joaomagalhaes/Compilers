@@ -245,113 +245,242 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
 // Dependendo do tipo de no, faz as verificacoes semanticas necessarias
 void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 {
+    int debug = 0;
     is_node* aux;
     char* type_aux;
     
     while(node != NULL)
     {
-        if(node->type == Store)
+        if(node->type == CompoundStat)
         {
-            printf("verificar no Store\n");
+            if(debug == 1) printf("No CompoundStat Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == IfElse)
+        {
+            if(debug == 1) printf("No IfElse Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == Print)
+        {
+            if(debug == 1) printf("No Print Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Return)
+        {
+            if(debug == 1) printf("No Return Encontrado\n");
+            if(node->child != NULL)
+                rec_semantic_verification(prog, name, node->child);
+
+        } else if(node->type == Store)
+        {
+            if(debug == 1) printf("No Store Encontrado\n");
+            check_symbol_existence(node->child, prog, name, 0);
+            rec_semantic_verification(prog, name, node->child->next);
             //check_store(node->child, prog, name);
             //check_incompatible_assignment(node->child, prog, name);
 
         } else if(node->type == StoreArray)
         {
-            printf("verificar no StoreArray\n");
+            if(debug == 1) printf("No StoreArray Encontrado\n");
+            check_symbol_existence(node->child, prog, name, 0);
             //check_incompatible_assignment_array(node->child, prog, name);
-            
-        } else if(node->type == IfElse)
-        {
-            printf("verificar no IfElse\n");
-            
+            rec_semantic_verification(prog, name, node->child->next);
+
         } else if(node->type == While)
         {
-            printf("verificar no While\n");
-        
-        } else if(node->type == CompoundStat)
-        {
-            printf("verificar no CompoundStat\n");
-            
-        } else if(node->type == Print)
-        {
-            printf("verificar no Print\n");
-            
-        } else if(node->type == Return)
-        {
-            printf("verificar no Return\n");
-        
+            if(debug == 1) printf("No While Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+
         } else if(node->type == Call)
         {
-            printf("verificar no Call\n");
-            check_call(node->child, prog, name);
+            if(debug == 1) printf("No Call Encontrado\n");
+            check_symbol_existence(node->child, prog, name, 1);
+            rec_semantic_verification(prog, name, node->child->next);
+            //check_call(node->child, prog, name);
+        
+        } else if(node->type == Or)
+        {
+            if(debug == 1) printf("No Or Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == And)
+        {
+            if(debug == 1) printf("No And Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Eq)
+        {
+            if(debug == 1) printf("No Eq Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Neq)
+        {
+            if(debug == 1) printf("No Neq Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Lt)
+        {
+            if(debug == 1) printf("No Lt Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+           
+        } else if(node->type == Gt)
+        {
+            if(debug == 1) printf("No Gt Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == Leq)
+        {
+            if(debug == 1) printf("No Leq Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Geq)
+        {
+            if(debug == 1) printf("No Geq Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Add)
+        {
+            if(debug == 1) printf("No Add Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Sub)
+        {
+            if(debug == 1) printf("No Sub Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Mul)
+        {
+            if(debug == 1) printf("No Mul Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Div)
+        {
+            if(debug == 1) printf("No Div Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Mod)
+        {
+            if(debug == 1) printf("No Mod Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == Minus)
+        {
+            if(debug == 1) printf("No Minus Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == Plus)
+        {
+            if(debug == 1) printf("No Plus Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+         
+        } else if(node->type == Length)
+        {
+            if(debug == 1) printf("No Length Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
             
         } else if(node->type == LoadArray)
         {
-            printf("verificar no LoadArray\n");
+            if(debug == 1) printf("No LoadArray Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == NewInt)
+        {
+            if(debug == 1) printf("No NewInt Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == NewBool)
+        {
+            if(debug == 1) printf("No NewBool Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+            
+        } else if(node->type == ParseArgs)
+        {
+            if(debug == 1) printf("No ParseArgs Encontrado\n");
+            rec_semantic_verification(prog, name, node->child);
+        
+        } else if(node->type == Id)
+        {
+            if(debug == 1) printf("No Id encontrado\n");
+            check_symbol_existence(node, prog, name, 0);
+            //check_call(node->child, prog, name);
         }
         
-        rec_semantic_verification(prog, name, node->child);
         node = node->next;
     }
 }
 
 // (1) Cannot find symbol %s
-void check_call(is_node* store, prog_env* prog, char* methodName)
+// Recebe um no (id), e um tipo (0 - variavel, 1 - metodo)
+// Procura a variavel ou metodo nas tabelas de simbolo para verificar se existe
+void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type)
 {
+    int found = 0;
     
-}
-
-
-
-// (3) Incompatible type in assignment to %s (got %s, required %s)
-// recebe um no Store, verifica se os tipos sao compativeis
-void check_incompatible_assignment(is_node *store, prog_env* prog, char* method_name)
-{
-    char* type1 = getType(store->id, prog, method_name);
-    char* type2 = typeCast(sem_type[store->next->type]);
+    table_element* temp;
+    temp = prog->global;
     
-    printf("No Store detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", store->id, type1, type2);
-
-    if(strcmp(type1, type2) != 0)
+    environment_list* aux;
+    aux = prog->methods;
+    
+    if(type == 0) // procurar variavel
     {
-        printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, type2, type1);
+        //printf("Verificar se a variavel %s existe\n", node->id);
+        
+        // verifica nas variveis globais
+        while(temp != NULL)
+        {
+            if(strcmp(temp->name, node->id) == 0 && strcmp(temp->type, "method") != 0)
+            {
+                //printf("variavel encontrada na tabela de simbolos global\n\n");
+                found = 1;
+            }
+            temp = temp->next;
+        }
+        
+        // verifica nas variaveis locais do metodo em q esta
+        while(aux != NULL)
+        {
+            if(strcmp(aux->name, method_name) == 0)
+            {
+                table_element* local = aux->locals;
+                while(local != NULL)
+                {
+                    if(strcmp(local->name, node->id) == 0)
+                    {
+                        //printf("variavel encontrada na tabela de simbolos do seu metodo\n\n");
+                        found = 1;
+                    }
+                    local = local->next;
+                }
+            }
+            aux = aux->next;
+        }
+    
+    } else // procurar metodo
+    {
+        //printf("Verificar se o metodo %s existe\n", node->id);
+        while(aux != NULL)
+        {
+            if(strcmp(aux->name, node->id) == 0)
+            {
+                //printf("metodo encontrado\n\n");
+                found = 1;
+            }
+            aux = aux->next;
+        }
+    }
+    
+    if(found == 0)
+    {
+        printf("Cannot find symbol %s\n", node->id);
         exit(0);
     }
 }
 
-// (4) Incompatible type in assignment to %s[] (got %s, required %s)
-// recebe um no StoreArray, verifica se os tipos sao compativeis
-void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, char* method_name)
-{
-    char* type1 = getType(storeArray->id, prog, method_name);
-    char* type2 = typeCast(sem_type[storeArray->next->next->type]);
-    
-    if(strcmp(type1, "int[]") == 0)
-        type1 = "int";
-    else if(strcmp(type1, "boolean[]") == 0)
-        type1 = "boolean";
 
-    printf("No StoreArray detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", storeArray->id, type1, type2);
-    
-    if(strcmp(type1, type2) != 0)
-    {
-        printf("Incompatible type in assigment to %s[] (got %s, required %s)\n", storeArray->id, type2, type1);
-        exit(0);
-    }
-}
-
-// (10) Symbol %s already defined
-void check_defined(char* name, char* nameNew)
-{
-	if(strcmp(name,nameNew) == 0)
-    {
-		printf ("Symbol %s already defined\n", name);
-		exit(0);
-	}
-}
-
-
+// (2) Incompatible type of argument %d in call to method %s (got %s, required %s)
+// Recebe um no (Call) e verifica se os argumentos passados estao correctos
 void check_store(is_node* store, prog_env* prog, char* methodName)
 {
 	table_element* temp;
@@ -442,6 +571,54 @@ void check_store(is_node* store, prog_env* prog, char* methodName)
 	}
     
 }
+
+// (3) Incompatible type in assignment to %s (got %s, required %s)
+// recebe um no Store, verifica se os tipos sao compativeis
+void check_incompatible_assignment(is_node *store, prog_env* prog, char* method_name)
+{
+    char* type1 = getType(store->id, prog, method_name);
+    char* type2 = typeCast(sem_type[store->next->type]);
+    
+    printf("No Store detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", store->id, type1, type2);
+
+    if(strcmp(type1, type2) != 0)
+    {
+        printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, type2, type1);
+        exit(0);
+    }
+}
+
+// (4) Incompatible type in assignment to %s[] (got %s, required %s)
+// recebe um no StoreArray, verifica se os tipos sao compativeis
+void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, char* method_name)
+{
+    char* type1 = getType(storeArray->id, prog, method_name);
+    char* type2 = typeCast(sem_type[storeArray->next->next->type]);
+    
+    if(strcmp(type1, "int[]") == 0)
+        type1 = "int";
+    else if(strcmp(type1, "boolean[]") == 0)
+        type1 = "boolean";
+
+    printf("No StoreArray detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", storeArray->id, type1, type2);
+    
+    if(strcmp(type1, type2) != 0)
+    {
+        printf("Incompatible type in assigment to %s[] (got %s, required %s)\n", storeArray->id, type2, type1);
+        exit(0);
+    }
+}
+
+// (10) Symbol %s already defined
+void check_defined(char* name, char* nameNew)
+{
+	if(strcmp(name,nameNew) == 0)
+    {
+		printf ("Symbol %s already defined\n", name);
+		exit(0);
+	}
+}
+
 
 
 

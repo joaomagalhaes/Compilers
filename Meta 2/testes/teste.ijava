@@ -5,6 +5,6 @@ class main
 	public static void lol()
 	{		
 		boolean x;
-		x = 1;
+		x = 1 + true;
 	}
 }

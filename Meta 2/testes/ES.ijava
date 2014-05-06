@@ -3,15 +3,22 @@ class compiladores
 	static int y;
 	public static int main()
 	{
-		//int x;
-		int[] x;
-
-		x = 3+2;
+		int x;
+		//int[] x;
+		int p,l;
+		//boolean[] asd;	
+		int[] a;
+		//if(p){ if(l){}}
+		//x = 3+2-3-5+30/3+23-12*a();
 		/*if(1) 
 		{ 
 			x[1] = true;
 		}*/
+		//System.out.println(a());
+		x = a();
+		a[1] = 1;
+		p = b();
 	}
-
-	
+	public static void b(){}
+	public static void a(){}	
 }

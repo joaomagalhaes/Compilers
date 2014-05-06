@@ -41,6 +41,5 @@ void check_methodParams(prog_env* prog, char* name, is_node* node);
 
 char* typeCast(char* type);
 
-void check_call(is_node* store, prog_env* prog, char* methodName);
-
+void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type);
 
