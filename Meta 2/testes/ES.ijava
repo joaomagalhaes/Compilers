@@ -1,27 +1,18 @@
 class compiladores
 {
-	static int y;
+	static int var;
+
 	public static int main()
 	{
 		int x;
-		//int[] x;
-		int p,l;
-		int b,c;
-		//boolean[] asd;	
-		int[] a;
-		//if(p){ if(l){}}
-		//x = 3+2-3-5+30/3+23-12*a();
-		/*if(1) 
-		{ 
-			x[1] = true;
-		}*/
-		//System.out.println(a());
-		x = met(a, b, c);
-		a[1] = 1;
-		p = b();
+		boolean y;
+		int[] z;
+		boolean[] w;
 
-		return 43+23+23+32+32+3+2;
+		var = metodo(z, x, y);
 	}
-	public static void b(){}
-	public static void met(){}	
+	
+	public static void metodo(int[] a, int c, boolean[] d)
+	{
+	}	
 }

@@ -245,7 +245,7 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
 // Dependendo do tipo de no, faz as verificacoes semanticas necessarias
 void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 {
-    int debug = 1;
+    int debug = 0;
     is_node* aux;
     char* type_aux;
     
@@ -276,7 +276,7 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
         {
             if(debug == 1) printf("No Store Encontrado\n");
             check_symbol_existence(node->child, prog, name, 0);
-            rec_semantic_verification(prog, name, node->child->next);
+            //rec_expr(prog, name, node->child->next);
             //check_store(node->child, prog, name);
             //check_incompatible_assignment(node->child, prog, name);
 
@@ -296,9 +296,8 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
         {
             if(debug == 1) printf("No Call Encontrado\n");
             check_symbol_existence(node->child, prog, name, 1);
-            check_arguments(node->child, prog, name);
+            check_arguments(node, prog, name);
             rec_semantic_verification(prog, name, node->child->next);
-            //check_call(node->child, prog, name);
         
         } else if(node->type == Or)
         {
@@ -410,13 +409,19 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
         node = node->next;
     }
 }
+/*
+rec_expr(prog, name, node->child->next)
+{
+    
+}
+*/
 
 // (1) Cannot find symbol %s
 // Recebe um no (id), e um tipo (0 - variavel, 1 - metodo)
 // Procura a variavel ou metodo nas tabelas de simbolo para verificar se existe
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type)
 {
-    int found = 0, debug = 1;
+    int found = 0, debug = 0;
     
     table_element* temp;
     temp = prog->global;
@@ -482,105 +487,105 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
 
 // (2) Incompatible type of argument %d in call to method %s (got %s, required %s)
 // Recebe um no (Call) e verifica se os argumentos passados estao correctos
-void check_arguments(is_node* call, prog_env* prog, char* name)
+void check_arguments(is_node* call, prog_env* prog, char* method_name)
 {
-    // meter a check_store aqui sem verificar cannot find symbol
+    int debug = 0;
     
-    int debug = 1;
+    if(debug) printf("verificar se os argumentos passados na funcao, estao correctos\n");
     
-    if(debug == 1) printf("verificar se os argumentos passados na funcao, estao correctos\n");
-    
-}
-
-void check_store(is_node* store, prog_env* prog, char* methodName)
-{
 	table_element* temp;
 	temp = prog->global;
     
 	environment_list* aux;
 	aux = prog->methods;
-	int ver = 0;
+	
+    int ver = 0;
 	int nparams = -1;
 	char* methodCalled;
 	
-	if(store->next->type == Call){
-		
-		/*metodo nao declarado*/
-		while(temp->next != NULL ){
-			if(strcmp(temp->name,store->next->child->id) == 0){
-				ver = 1;
-				methodCalled=temp->name;
-				//break;
-			}
-			temp = temp->next;
+    if(debug) printf("verificar se o metodo chamado existe\n");
+	
+    while(temp != NULL)
+    {
+		if(strcmp(temp->name, call->child->id) == 0)
+        {
+			ver = 1;
+			methodCalled = temp->name;
+            if(debug) printf("metodo existe, chama-se %s\n", methodCalled);
 		}
-		
-		if(ver == 0){
-			printf("Cannot find symbol %s\n", store->next->child->id);
-			exit(0);
-		}
-		
-		/*parametros nao adequados*/
-		//procura metodo (local)
-		while(aux!= NULL){
-			if(strcmp(aux->name,methodCalled) == 0)
-				break;
-            
-			aux=aux->next;
-		}
+		temp = temp->next;
+	}
+	
+	if(ver == 0)
+    {
+		printf("Cannot find symbol %s\n", call->child->id);
+		exit(0);
+	}
+	
+	/*parametros nao adequados*/
+	//procura metodo (local)
+	while(aux!= NULL){
+		if(strcmp(aux->name,methodCalled) == 0)
+			break;
         
-		//tabela simbolos metodo
-		table_element* localtemp;
-		localtemp = aux->locals;//->child;
-        
-		//parametros escritos na chamada
-		is_node* params = store->next->child->next;
-        
-		while(params!= NULL){
-			nparams ++;
-			localtemp=localtemp->next;
-			if(localtemp != NULL){
-				if (localtemp->param == 1){
-					char* paramtype = getType(params->id,prog,methodName);
-                    
-					//variavel nao declarada
-					if(paramtype ==	NULL){
-						printf("Cannot find symbol %s\n", params->id);
-						exit(0);
-					}
-                    
-					//tipos incompativeis
-					if(strcmp(localtemp->type,paramtype)!=0){
-						printf("Incompatible type of argument %d in call to method %s (got %s, required %s)\n",nparams,methodCalled,paramtype,localtemp->type);
-						exit(0);
-					}
-                    
-				}else{
-					//parametros a mais escritos
-					printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n",nparams,methodCalled,params->id);
-					exit(0);
-				}
-			}else{
-				//parametros a mais escritos
-				printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n",nparams,methodCalled,params->id);
-				exit(0);
-			}
-			params=params->next;
-		}
-        
-		int pos;
-		//parametros a menos escritos
-		if(nparams < (pos=getParamN(prog,methodCalled))){
-			
-			char* req = getParambyPos(prog,methodCalled,pos);
-			printf("Incompatible type of argument %d in call to method %s (got void, required %s)\n",nparams+1,methodCalled, req);
-			exit(0);
-            
-            
-		}
-        
+		aux=aux->next;
 	}
     
+	
+	//tabela simbolos metodo
+	table_element* localtemp;
+	localtemp = aux->locals;//->child;
+    
+	//parametros escritos na chamada
+	is_node* params = call->child->next;
+    
+	while(params != NULL)
+    {
+		nparams++;
+		localtemp = localtemp->next;
+		
+        if(localtemp != NULL)
+        {
+			if (localtemp->param == 1)
+            {
+				char* paramtype = getType(params->id, prog, method_name);
+                
+				//variavel nao declarada
+				if(paramtype ==	NULL)
+                {
+					printf("Cannot find symbol %s\n", params->id);
+					exit(0);
+				}
+                
+				//tipos incompativeis
+				if(strcmp(localtemp->type, paramtype) != 0)
+                {
+					printf("Incompatible type of argument %d in call to method %s (got %s, required %s)\n",nparams,methodCalled,paramtype,localtemp->type);
+					exit(0);
+				}
+                
+			}else
+            {
+				//parametros a mais escritos
+				printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n", nparams, methodCalled, getType(params->id, prog, method_name));
+				exit(0);
+			}
+		}else{
+			//parametros a mais escritos
+			printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n",nparams,methodCalled, getType(params->id, prog, method_name));
+			exit(0);
+		}
+		params=params->next;
+	}
+    
+	int pos;
+	//parametros a menos escritos
+	if(nparams < (pos=getParamN(prog,methodCalled))){
+		
+		char* req = getParambyPos(prog,methodCalled,pos);
+		printf("Incompatible type of argument %d in call to method %s (got void, required %s)\n",nparams+1,methodCalled, req);
+		exit(0);
+	}
 }
 
 // (3) Incompatible type in assignment to %s (got %s, required %s)
@@ -629,8 +634,6 @@ void check_defined(char* name, char* nameNew)
 		exit(0);
 	}
 }
-
-
 
 
 //devolve o numero de parametros de um determinado metodo
@@ -690,10 +693,11 @@ char* getType(char* nameP, prog_env* prog, char* methodName)
 	environment_list* aux;
 	aux = prog->methods;
     
+    
 	// verifica variaveis globais
 	while(temp != NULL)
     {
-		if(strcmp(temp->name, nameP) == 0)
+		if(strcmp(temp->name, nameP) == 0 && strcmp(temp->type, "method") != 0)
 			return temp->type;
 		temp = temp->next;
 	}
