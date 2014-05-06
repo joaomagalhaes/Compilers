@@ -19,6 +19,8 @@ class compiladores
 		x = met(a, b, c);
 		a[1] = 1;
 		p = b();
+
+		return 43+23+23+32+32+3+2;
 	}
 	public static void b(){}
 	public static void met(){}	
