@@ -245,7 +245,7 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
 // Dependendo do tipo de no, faz as verificacoes semanticas necessarias
 void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 {
-    int debug = 0;
+    int debug = 1;
     is_node* aux;
     char* type_aux;
     
@@ -296,6 +296,7 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
         {
             if(debug == 1) printf("No Call Encontrado\n");
             check_symbol_existence(node->child, prog, name, 1);
+            check_arguments(node->child, prog, name);
             rec_semantic_verification(prog, name, node->child->next);
             //check_call(node->child, prog, name);
         
@@ -415,7 +416,7 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 // Procura a variavel ou metodo nas tabelas de simbolo para verificar se existe
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type)
 {
-    int found = 0;
+    int found = 0, debug = 1;
     
     table_element* temp;
     temp = prog->global;
@@ -425,14 +426,14 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
     
     if(type == 0) // procurar variavel
     {
-        //printf("Verificar se a variavel %s existe\n", node->id);
+        if(debug) printf("Verificar se a variavel %s existe\n", node->id);
         
         // verifica nas variveis globais
         while(temp != NULL)
         {
             if(strcmp(temp->name, node->id) == 0 && strcmp(temp->type, "method") != 0)
             {
-                //printf("variavel encontrada na tabela de simbolos global\n\n");
+                if(debug) printf("variavel encontrada na tabela de simbolos global\n\n");
                 found = 1;
             }
             temp = temp->next;
@@ -448,7 +449,7 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
                 {
                     if(strcmp(local->name, node->id) == 0)
                     {
-                        //printf("variavel encontrada na tabela de simbolos do seu metodo\n\n");
+                        if(debug) printf("variavel encontrada na tabela de simbolos do seu metodo\n\n");
                         found = 1;
                     }
                     local = local->next;
@@ -481,6 +482,16 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
 
 // (2) Incompatible type of argument %d in call to method %s (got %s, required %s)
 // Recebe um no (Call) e verifica se os argumentos passados estao correctos
+void check_arguments(is_node* call, prog_env* prog, char* name)
+{
+    // meter a check_store aqui sem verificar cannot find symbol
+    
+    int debug = 1;
+    
+    if(debug == 1) printf("verificar se os argumentos passados na funcao, estao correctos\n");
+    
+}
+
 void check_store(is_node* store, prog_env* prog, char* methodName)
 {
 	table_element* temp;

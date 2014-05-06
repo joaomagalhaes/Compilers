@@ -43,3 +43,4 @@ char* typeCast(char* type);
 
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type);
 
+void check_arguments(is_node* call, prog_env* prog, char* name);

@@ -6,6 +6,7 @@ class compiladores
 		int x;
 		//int[] x;
 		int p,l;
+		int b,c;
 		//boolean[] asd;	
 		int[] a;
 		//if(p){ if(l){}}
@@ -15,10 +16,10 @@ class compiladores
 			x[1] = true;
 		}*/
 		//System.out.println(a());
-		x = a();
+		x = met(a, b, c);
 		a[1] = 1;
 		p = b();
 	}
 	public static void b(){}
-	public static void a(){}	
+	public static void met(){}	
 }
