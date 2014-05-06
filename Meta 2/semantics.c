@@ -245,7 +245,7 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
 // Dependendo do tipo de no, faz as verificacoes semanticas necessarias
 void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
 {
-    int debug = 0;
+    int debug = 1;
     is_node* aux;
     char* type_aux;
     
@@ -253,168 +253,202 @@ void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
     {
         if(node->type == CompoundStat)
         {
-            if(debug == 1) printf("No CompoundStat Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
+            if(debug) printf("No CompoundStat Encontrado\n");
+            //rec_semantic_verification(prog, name, node->child);
         
         } else if(node->type == IfElse)
         {
-            if(debug == 1) printf("No IfElse Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
+            if(debug) printf("No IfElse Encontrado\n");
+            //incompatible_statement(expr_recursive(prog, name, node->child));
+            //rec_semantic_verification(prog, name, node->child->next);
+            char* expr_type;
+            expr_type = expr_recursive(prog, name, node->child);
+            
+            if(strcmp(expr_type, "boolean") != 0)
+            {
+                printf("Incompatible type in IfElse statement (got %s, required boolean)\n", expr_type);
+                exit(0);
+            }
+            rec_semantic_verification(prog, name, node->child->next);
             
         } else if(node->type == Print)
         {
-            if(debug == 1) printf("No Print Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
+            if(debug) printf("No Print Encontrado\n");
+            //rec_semantic_verification(prog, name, node->child);
         
         } else if(node->type == Return)
         {
-            if(debug == 1) printf("No Return Encontrado\n");
-            if(node->child != NULL)
-                rec_semantic_verification(prog, name, node->child);
+            if(debug) printf("No Return Encontrado\n");
+            /*if(node->child != NULL)
+                rec_semantic_verification(prog, name, node->child);*/
 
         } else if(node->type == Store)
         {
-            if(debug == 1) printf("No Store Encontrado\n");
-            check_symbol_existence(node->child, prog, name, 0);
+            if(debug) printf("No Store Encontrado\n");
+            //check_symbol_existence(node->child, prog, name, 0);
             //rec_expr(prog, name, node->child->next);
             //check_store(node->child, prog, name);
             //check_incompatible_assignment(node->child, prog, name);
 
         } else if(node->type == StoreArray)
         {
-            if(debug == 1) printf("No StoreArray Encontrado\n");
-            check_symbol_existence(node->child, prog, name, 0);
+            if(debug) printf("No StoreArray Encontrado\n");
+            //check_symbol_existence(node->child, prog, name, 0);
             //check_incompatible_assignment_array(node->child, prog, name);
-            rec_semantic_verification(prog, name, node->child->next);
+            //rec_semantic_verification(prog, name, node->child->next);
 
         } else if(node->type == While)
         {
-            if(debug == 1) printf("No While Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-
-        } else if(node->type == Call)
-        {
-            if(debug == 1) printf("No Call Encontrado\n");
-            check_symbol_existence(node->child, prog, name, 1);
-            check_arguments(node, prog, name);
+            if(debug) printf("No While Encontrado\n");
+            //rec_expr(prog, name, node->child->next);
+            char* expr_type;
+            expr_type = expr_recursive(prog, name, node->child);
+            
+            if(strcmp(expr_type, "boolean") != 0)
+            {
+                printf("Incompatible type in While statement (got %s, required boolean)\n", expr_type);
+                exit(0);
+            }
             rec_semantic_verification(prog, name, node->child->next);
-        
-        } else if(node->type == Or)
-        {
-            if(debug == 1) printf("No Or Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == And)
-        {
-            if(debug == 1) printf("No And Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Eq)
-        {
-            if(debug == 1) printf("No Eq Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Neq)
-        {
-            if(debug == 1) printf("No Neq Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Lt)
-        {
-            if(debug == 1) printf("No Lt Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-           
-        } else if(node->type == Gt)
-        {
-            if(debug == 1) printf("No Gt Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == Leq)
-        {
-            if(debug == 1) printf("No Leq Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Geq)
-        {
-            if(debug == 1) printf("No Geq Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Add)
-        {
-            if(debug == 1) printf("No Add Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Sub)
-        {
-            if(debug == 1) printf("No Sub Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Mul)
-        {
-            if(debug == 1) printf("No Mul Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Div)
-        {
-            if(debug == 1) printf("No Div Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Mod)
-        {
-            if(debug == 1) printf("No Mod Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == Minus)
-        {
-            if(debug == 1) printf("No Minus Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == Plus)
-        {
-            if(debug == 1) printf("No Plus Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-         
-        } else if(node->type == Length)
-        {
-            if(debug == 1) printf("No Length Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == LoadArray)
-        {
-            if(debug == 1) printf("No LoadArray Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == NewInt)
-        {
-            if(debug == 1) printf("No NewInt Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == NewBool)
-        {
-            if(debug == 1) printf("No NewBool Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-            
-        } else if(node->type == ParseArgs)
-        {
-            if(debug == 1) printf("No ParseArgs Encontrado\n");
-            rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Id)
-        {
-            if(debug == 1) printf("No Id encontrado\n");
-            check_symbol_existence(node, prog, name, 0);
-            //check_call(node->child, prog, name);
         }
         
         node = node->next;
     }
 }
-/*
-rec_expr(prog, name, node->child->next)
+
+char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
 {
+    int debug = 1;
     
+    switch (expr->type)
+    {
+        case Call:
+            if(debug) printf("No Call\n");
+            //check_symbol_existence(node->child, prog, method_name, 1);
+            //check_arguments(node, prog, nmethod_name);
+            return method_return(prog, expr->child->id);
+            break;
+            
+        case Or:
+            if(debug) printf("No Or\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case And:
+            if(debug) printf("No And\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Eq:
+            if(debug) printf("No Eq\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Neq:
+            if(debug) printf("No Neq\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Lt:
+            if(debug) printf("No Lt\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Gt:
+            if(debug) printf("No Gt\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Leq:
+            if(debug) printf("No Leq\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Add:
+            if(debug) printf("No Add\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Sub:
+            if(debug) printf("No Sub\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Mul:
+            if(debug) printf("No Mul\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Div:
+            if(debug) printf("No Div\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Mod:
+            if(debug) printf("No Mod\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Plus:
+            if(debug) printf("No Plus\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Minus:
+            if(debug) printf("No Minus\n");
+            return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case Length:
+            if(debug) printf("No Length\n");
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case LoadArray:
+            if(debug) printf("No LoadArray\n");
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case NewInt:
+            if(debug) printf("No NewInt\n");
+            return "int";
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case NewBool:
+            if(debug) printf("No NewBool\n");
+            return "boolean";
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case ParseArgs:
+            if(debug) printf("No ParseArgs\n");
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+            
+        case IntLit:
+            if(debug) printf("No IntLit\n");
+            return "int";
+            break;
+            
+        case BoolLit:
+            if(debug) printf("No BoolLit\n");
+            return "boolean";
+            break;
+            
+        case Id:
+            if(debug) printf("No Id\n");
+            //return expr_recursive(prog, method_name, expr->child);
+            break;
+        
+        default:
+            break;
+    }
+
+    return "fodase";
 }
-*/
+
+
 
 // (1) Cannot find symbol %s
 // Recebe um no (id), e um tipo (0 - variavel, 1 - metodo)
@@ -625,6 +659,21 @@ void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, ch
     }
 }
 
+//(7) Invalid literal %s
+void check_literal(is_node* node)
+{
+	char* id = node->id;
+	int i = 0;
+	while(id[i] != NULL)
+		i++;
+    
+	if(id[0] == '0' && i > 1)
+    {
+		printf("Invalid literal %s\n", id);
+		exit(0);
+	}
+}
+
 // (10) Symbol %s already defined
 void check_defined(char* name, char* nameNew)
 {
@@ -719,6 +768,23 @@ char* getType(char* nameP, prog_env* prog, char* methodName)
 		aux = aux->next;
 	}
 	return NULL;
+}
+
+// recebe o nome de um metodo, devolve o que ele retorna em string
+char* method_return(prog_env* prog, char* method_name)
+{
+	environment_list* aux;
+	aux = prog->methods;
+    
+	while(aux != NULL)
+    {
+		if(strcmp(aux->name, method_name) == 0)
+        {
+			table_element* local = aux->locals;
+            return local->type;
+        }
+        aux = aux->next;
+    }
 }
 
 // cast entre tipos na AST e tipos da tabela de simbolo

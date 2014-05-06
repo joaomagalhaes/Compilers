@@ -44,3 +44,9 @@ char* typeCast(char* type);
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type);
 
 void check_arguments(is_node* call, prog_env* prog, char* name);
+
+void check_literal(is_node* node);
+
+char* expr_recursive(prog_env* prog, char* method_name, is_node* expr);
+
+char* method_return(prog_env* prog, char* method_name);

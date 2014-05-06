@@ -1,18 +1,24 @@
 class compiladores
 {
-	static int var;
+	//static int var;
 
 	public static int main()
 	{
-		int x;
+		//int x;
 		boolean y;
-		int[] z;
-		boolean[] w;
+		//int[] z;
+		//boolean[] w;
+		boolean ppp;
+		while(
 
-		var = metodo(z, x, y);
+		 true
+) {
+}
+	if(5/3){}	
+		//var = metodo(z, x, y);
 	}
 	
 	public static void metodo(int[] a, int c, boolean[] d)
-	{
+{
 	}	
 }
