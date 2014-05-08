@@ -51,6 +51,7 @@ prog_env *mySemantic = NULL;
 %right NOT
 %left OCURV CCURV OSQUARE CSQUARE
 %left DOTLENGTH
+%nonassoc UMINUS
 
 %nonassoc ELSE
 
@@ -122,8 +123,8 @@ Expr:		Expr OP1 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP25 Expr 										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP3 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
 		|	Expr OP4 Expr										{ $$ = insert_expr_ope_expr($1, $2, $3); }
-		|	OP3 Expr											{ $$ = insert_Oper_Exp($1, $2); }
-		|	NOT Expr											{ $$ = insert_Oper_Exp("!", $2); }
+		|	OP3 Expr	 %prec UMINUS							{ $$ = insert_Oper_Exp($1, $2); }
+		|	NOT Expr	 %prec UMINUS							{ $$ = insert_Oper_Exp("!", $2); }
 		|	NEW INT OSQUARE Expr CSQUARE                        { $$ = insert_new_exp(NewInt, $4); }
 		|   NEW BOOL OSQUARE Expr CSQUARE                       { $$ = insert_new_exp(NewBool, $4); }
         |   ExprAux                                             { $$ = $1; }

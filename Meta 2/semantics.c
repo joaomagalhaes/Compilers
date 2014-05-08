@@ -13,12 +13,12 @@ char* sem_type[] = {    "Program",
                         "Int", "Bool", "IntArray", "BoolArray", "StringArray", "Void", "Id", "IntLit", "BoolLit",
                         "Null" };
 
+int debug = 0;
+
 /* ************************************
  * Construccao da tabelas de simbolos *
  ************************************ */
 
-// Recebe arvore sintaxe abstracta (no Program)
-// Devolve tabela de simbolos
 prog_env *check_program(is_node *node)
 {
 	prog_env *prog = (prog_env*) malloc(sizeof(prog_env));
@@ -31,10 +31,6 @@ prog_env *check_program(is_node *node)
 	return prog;
 }
 
-// Recebe filhos do no 'Program'
-// Se Id adicionar nome da classe na tabela de simbolos global
-// Se VarDecl adiciona variavel na tabela de simbolos global
-// Se MethodDecl adiciona metodo na tabela de simbolos global e cria tabela simbolos do metodo
 void check_class(is_node *node, prog_env *prog)
 {
     is_node* aux;
@@ -72,9 +68,6 @@ void check_class(is_node *node, prog_env *prog)
 	}
 }
 
-// Recebe filhos do no 'MethodDecl'
-// Adiciona o elemento return <tipo> na tabela de simbolo do metodo correspondente
-// Chama as funcoes de verificacoes dos no filhos (MethodParams e MethodBody)
 void check_methodDecl(prog_env* prog, is_node* node)
 {
     char* method_name = node->next->id;
@@ -100,8 +93,6 @@ void check_methodDecl(prog_env* prog, is_node* node)
     }
 }
 
-// Recebe filhos do no 'MethodBody'
-// Se VarDecl adiciona a variavel na tabela de simbolos do metodo correspondente
 void check_methodBody(prog_env* prog, char* name, is_node* node)
 {
     is_node* aux;
@@ -129,8 +120,6 @@ void check_methodBody(prog_env* prog, char* name, is_node* node)
     }
 }
 
-// Recebe filhos do no 'MethodParams'
-// Adiciona os parametros na tabela de simbolos do metodo correspondente
 void check_methodParams(prog_env* prog, char* name, is_node* node)
 {
     while(node != NULL)
@@ -140,8 +129,6 @@ void check_methodParams(prog_env* prog, char* name, is_node* node)
     }
 }
 
-// Funcao Auxiliar - insercao na tabela de simbolos global
-// Verificao do erro semantico 'Symbol already defined'
 void insert_global_table(prog_env* prog, char* id, char* type)
 {
 	table_element* temp;
@@ -161,7 +148,6 @@ void insert_global_table(prog_env* prog, char* id, char* type)
 	}
 }
 
-// Funcao Auxiliar - insercao de nova tabela de simbolos de metodo
 void insert_methods_table(prog_env* prog, char* id, char* type)
 {
 	environment_list* temp;
@@ -178,8 +164,6 @@ void insert_methods_table(prog_env* prog, char* id, char* type)
 	}
 }
 
-// Funcao Auxiliar - insercao de elemento na tabela de simbolos do metodo correspondente
-// Verificao do erro semantico 'Symbol already defined'
 void insert_method_elements(prog_env* prog, char* method_name, char* type, char* name, int par)
 {
     environment_list* methods = prog->methods;
@@ -213,8 +197,6 @@ void insert_method_elements(prog_env* prog, char* method_name, char* type, char*
  * Verificacao dos erros semanticos   *
  ************************************ */
 
-// Recebe arvore sintaxe abstracta e tabela de simbolos
-// Procura nos MethodBody
 void check_semantic(is_node* myProgram, prog_env* mySemantic)
 {
     is_node* aux = myProgram->child;
@@ -227,12 +209,11 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
         {
             aux2 = aux->child;
             method_name = aux->child->next->id;
-            //printf("estou no metodo de nome %s\n", method_name);
             
             while(aux2 != NULL)
             {
                 if(aux2->type == MethodBody)
-                    rec_semantic_verification(mySemantic, method_name, aux2->child);
+                    semantic_statements(mySemantic, method_name, aux2->child);
                 
                 aux2 = aux2->next;
             }
@@ -241,193 +222,388 @@ void check_semantic(is_node* myProgram, prog_env* mySemantic)
     }
 }
 
-// Funcao recursiva que recebe um no e verifica os seus irmaos
-// Dependendo do tipo de no, faz as verificacoes semanticas necessarias
-void rec_semantic_verification(prog_env* prog, char* name, is_node* node)
+void semantic_statements(prog_env* prog, char* name, is_node* node)
 {
-    int debug = 1;
-    is_node* aux;
-    char* type_aux;
+    char* expr_type;
+    char* expr_type2;
+    char* expr_type3;
     
     while(node != NULL)
     {
-        if(node->type == CompoundStat)
+        switch(node->type)
         {
-            if(debug) printf("No CompoundStat Encontrado\n");
-            //rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == IfElse)
-        {
-            if(debug) printf("No IfElse Encontrado\n");
-            //incompatible_statement(expr_recursive(prog, name, node->child));
-            //rec_semantic_verification(prog, name, node->child->next);
-            char* expr_type;
-            expr_type = expr_recursive(prog, name, node->child);
-            
-            if(strcmp(expr_type, "boolean") != 0)
-            {
-                printf("Incompatible type in IfElse statement (got %s, required boolean)\n", expr_type);
-                exit(0);
-            }
-            rec_semantic_verification(prog, name, node->child->next);
-            
-        } else if(node->type == Print)
-        {
-            if(debug) printf("No Print Encontrado\n");
-            //rec_semantic_verification(prog, name, node->child);
-        
-        } else if(node->type == Return)
-        {
-            if(debug) printf("No Return Encontrado\n");
-            /*if(node->child != NULL)
-                rec_semantic_verification(prog, name, node->child);*/
+            case CompoundStat:
+                if(debug) printf("No CompoundStat Encontrado\n");
+                semantic_statements(prog, name, node->child);
+                break;
+                
+            case IfElse:
+                if(debug) printf("No IfElse Encontrado\n");
+                expr_type = expr_recursive(prog, name, node->child);
+                if(strcmp(expr_type, "boolean") != 0)
+                {
+                    printf("Incompatible type in if statement (got %s, required boolean)\n", expr_type);
+                    exit(0);
+                }
+                semantic_statements(prog, name, node->child->next);
+                break;
+                
+            case Print:
+                if(debug) printf("No Print Encontrado\n");
+                expr_type = expr_recursive(prog, name, node->child);
+                
+                if(strcmp(expr_type, "boolean") != 0 && strcmp(expr_type, "int") != 0)
+                {
+                    printf("Incompatible type in System.out.println statement (got %s, required boolean or int)\n", expr_type);
+                    exit(0);
+                }
+                break;
+                
+            case Return:
+                if(debug) printf("No Return Encontrado\n");
+                if(node->child != NULL)
+                {
+                    expr_type = expr_recursive(prog, name, node->child);
+                    expr_type2 = method_return(prog, name);
+                    if(strcmp(expr_type2, expr_type) != 0)
+                    {
+                        printf("Incompatible type in return statement (got %s, required %s)\n", expr_type, expr_type2);
+                        exit(0);
+                    }
+                } else
+                {
+                    expr_type2 = method_return(prog, name);
+                    if(strcmp(expr_type2, "void") != 0)
+                    {
+                        printf("Incompatible type in return statement (got void, required %s)\n", expr_type2);
+                        exit(0);
+                    }
+                }
+                break;
+                
+            case Store:
+                if(debug) printf("No Store Encontrado\n");
+                expr_type = expr_recursive(prog, name, node->child);
+                expr_type2 = expr_recursive(prog, name, node->child->next);
+                if(strcmp(expr_type, expr_type2) != 0)
+                {
+                    printf("Incompatible type in assignment to %s (got %s, required %s)\n", node->child->id, expr_type2, expr_type);
+                    exit(0);
+                }
+                break;
 
-        } else if(node->type == Store)
-        {
-            if(debug) printf("No Store Encontrado\n");
-            //check_symbol_existence(node->child, prog, name, 0);
-            //rec_expr(prog, name, node->child->next);
-            //check_store(node->child, prog, name);
-            //check_incompatible_assignment(node->child, prog, name);
+            case StoreArray:
+                if(debug) printf("No StoreArray Encontrado\n");
+                expr_type = expr_recursive(prog, name, node->child);
+                expr_type2 = expr_recursive(prog, name, node->child->next);
+                expr_type3 = expr_recursive(prog, name, node->child->next->next);
+                
+                if(strcmp(expr_type, "int[]") != 0 && strcmp(expr_type, "boolean[]") != 0)
+                {
+                    printf("Operator [ cannot be applied to types %s, %s\n", expr_type, expr_type2);
+                    exit(0);
+                }
+                
+                if(strcmp(expr_type2, "int") != 0)
+                {
+                    printf("Operator [ cannot be applied to types %s, %s\n", expr_type, expr_type2);
+                    exit(0);
+                }
+                
+                if(strcmp(expr_type, "boolean[]") == 0)
+                    expr_type = "boolean";
+                else if(strcmp(expr_type, "int[]") == 0)
+                    expr_type = "int";
+                
+                if(strcmp(expr_type, expr_type3) != 0)
+                {
+                    printf("Incompatible type in assignment to %s[] (got %s, required %s)\n", node->child->id, expr_type3, expr_type);
+                    exit(0);
+                }
+                break;
 
-        } else if(node->type == StoreArray)
-        {
-            if(debug) printf("No StoreArray Encontrado\n");
-            //check_symbol_existence(node->child, prog, name, 0);
-            //check_incompatible_assignment_array(node->child, prog, name);
-            //rec_semantic_verification(prog, name, node->child->next);
-
-        } else if(node->type == While)
-        {
-            if(debug) printf("No While Encontrado\n");
-            //rec_expr(prog, name, node->child->next);
-            char* expr_type;
-            expr_type = expr_recursive(prog, name, node->child);
+            case While:
+                if(debug) printf("No While Encontrado\n");
+                expr_type = expr_recursive(prog, name, node->child);
             
-            if(strcmp(expr_type, "boolean") != 0)
-            {
-                printf("Incompatible type in While statement (got %s, required boolean)\n", expr_type);
-                exit(0);
-            }
-            rec_semantic_verification(prog, name, node->child->next);
+                if(strcmp(expr_type, "boolean") != 0)
+                {
+                    printf("Incompatible type in while statement (got %s, required boolean)\n", expr_type);
+                    exit(0);
+                }
+                semantic_statements(prog, name, node->child->next);
+                break;
+            
+            default:
+                break;
         }
-        
         node = node->next;
     }
 }
 
 char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
 {
-    int debug = 1;
+    char* expr_type;
+    char* expr_type1;
     
     switch (expr->type)
     {
         case Call:
-            if(debug) printf("No Call\n");
-            //check_symbol_existence(node->child, prog, method_name, 1);
-            //check_arguments(node, prog, nmethod_name);
+            check_symbol_existence(expr->child, prog, method_name, 1);
+            check_arguments(expr->child, prog, method_name);
             return method_return(prog, expr->child->id);
             break;
             
         case Or:
-            if(debug) printf("No Or\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "boolean") != 0 || strcmp(expr_type1, "boolean") != 0)
+            {
+                printf("Operator || cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
         case And:
-            if(debug) printf("No And\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "boolean") != 0 || strcmp(expr_type1, "boolean") != 0)
+            {
+                printf("Operator && cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
+            break;
+            
+        case Not:
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "boolean") != 0)
+            {
+                printf("Operator ! cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "boolean";
             break;
             
         case Eq:
-            if(debug) printf("No Eq\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, expr_type1) != 0) // pode fazer-se int[] == int[] e boolean[] == boolean[] ?
+            {
+                printf("Operator == cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
-        case Neq:
+        case Neq: // x != y - pode ser aplicado a inteiros e booleans
             if(debug) printf("No Neq\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, expr_type1) != 0) // pode fazer-se int[] != int[] e boolean[] != boolean[] ?
+            {
+                printf("Operator != cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
-        case Lt:
-            if(debug) printf("No Lt\n");
-            return expr_recursive(prog, method_name, expr->child);
+        case Lt: // x < y - so pode ser aplicado a inteiros, devolve boolean
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator < cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
         case Gt:
-            if(debug) printf("No Gt\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator > cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
         case Leq:
-            if(debug) printf("No Leq\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator <= cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
+            break;
+            
+        case Geq:
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator >= cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "boolean";
             break;
             
         case Add:
-            if(debug) printf("No Add\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator + cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Sub:
             if(debug) printf("No Sub\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator - cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Mul:
             if(debug) printf("No Mul\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator * cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Div:
             if(debug) printf("No Div\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator / cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Mod:
             if(debug) printf("No Mod\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator %% cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Plus:
             if(debug) printf("No Plus\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "int") != 0)
+            {
+                printf("Operator + cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Minus:
             if(debug) printf("No Minus\n");
-            return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "int") != 0)
+            {
+                printf("Operator - cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "int";
             break;
             
         case Length:
             if(debug) printf("No Length\n");
-            //return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "int") == 0 || strcmp(expr_type, "boolean") == 0)
+            {
+                printf("Operator .length cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "int";
             break;
             
         case LoadArray:
             if(debug) printf("No LoadArray\n");
-            //return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+        
+            if((strcmp(expr_type, "int[]") != 0 && strcmp(expr_type, "boolean[]") != 0 && strcmp(expr_type, "String[]") != 0 ) || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator [ cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            
+            if(strcmp(expr_type, "int[]") == 0)
+                expr_type = "int";
+            else if(strcmp(expr_type, "boolean[]") == 0)
+                expr_type = "boolean";
+            else if(strcmp(expr_type, "String[]") == 0)
+                expr_type = "String";
+            
+            return expr_type;
             break;
             
         case NewInt:
             if(debug) printf("No NewInt\n");
-            return "int";
-            //return expr_recursive(prog, method_name, expr->child);
+            expr_type =  expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "int") != 0)
+            {
+                printf("Operator new int cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "int[]";
             break;
             
         case NewBool:
             if(debug) printf("No NewBool\n");
-            return "boolean";
-            //return expr_recursive(prog, method_name, expr->child);
+            expr_type =  expr_recursive(prog, method_name, expr->child);
+            if(strcmp(expr_type, "int") != 0)
+            {
+                printf("Operator new boolean cannot be applied to type %s\n", expr_type);
+                exit(0);
+            }
+            return "boolean[]";
             break;
             
         case ParseArgs:
             if(debug) printf("No ParseArgs\n");
-            //return expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
+            expr_type1 = expr_recursive(prog, method_name, expr->child->next);
+            
+            if(strcmp(expr_type, "String[]") != 0 || strcmp(expr_type1, "int") != 0)
+            {
+                printf("Operator Integer.parseInt cannot be applied to types %s, %s\n", expr_type, expr_type1);
+                exit(0);
+            }
+            return "int";
             break;
             
         case IntLit:
             if(debug) printf("No IntLit\n");
+            check_literal(expr->id);
             return "int";
             break;
             
@@ -438,24 +614,20 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             
         case Id:
             if(debug) printf("No Id\n");
-            //return expr_recursive(prog, method_name, expr->child);
+            check_symbol_existence(expr, prog, method_name, 0);
+            return getType(expr->id, prog, method_name);
             break;
         
         default:
             break;
     }
 
-    return "fodase";
+    return "teste";
 }
 
-
-
-// (1) Cannot find symbol %s
-// Recebe um no (id), e um tipo (0 - variavel, 1 - metodo)
-// Procura a variavel ou metodo nas tabelas de simbolo para verificar se existe
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type)
 {
-    int found = 0, debug = 0;
+    int found = 0;
     
     table_element* temp;
     temp = prog->global;
@@ -518,222 +690,56 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
     }
 }
 
-
-// (2) Incompatible type of argument %d in call to method %s (got %s, required %s)
-// Recebe um no (Call) e verifica se os argumentos passados estao correctos
 void check_arguments(is_node* call, prog_env* prog, char* method_name)
 {
-    int debug = 0;
-    
     if(debug) printf("verificar se os argumentos passados na funcao, estao correctos\n");
     
-	table_element* temp;
-	temp = prog->global;
-    
-	environment_list* aux;
-	aux = prog->methods;
-	
-    int ver = 0;
-	int nparams = -1;
-	char* methodCalled;
-	
-    if(debug) printf("verificar se o metodo chamado existe\n");
-	
-    while(temp != NULL)
+    char* method_called = call->id;
+    char* tipo;
+    char* tipo2;
+    call = call->next;
+    int n_argument = 0;
+
+    while(call != NULL)
     {
-		if(strcmp(temp->name, call->child->id) == 0)
-        {
-			ver = 1;
-			methodCalled = temp->name;
-            if(debug) printf("metodo existe, chama-se %s\n", methodCalled);
-		}
-		temp = temp->next;
-	}
-	
-	if(ver == 0)
-    {
-		printf("Cannot find symbol %s\n", call->child->id);
-		exit(0);
-	}
-	
-	/*parametros nao adequados*/
-	//procura metodo (local)
-	while(aux!= NULL){
-		if(strcmp(aux->name,methodCalled) == 0)
-			break;
+        tipo = expr_recursive(prog, method_name, call);
+        tipo2 = getArgumentType(prog, method_called, n_argument);
         
-		aux=aux->next;
-	}
-    
-	
-	//tabela simbolos metodo
-	table_element* localtemp;
-	localtemp = aux->locals;//->child;
-    
-	//parametros escritos na chamada
-	is_node* params = call->child->next;
-    
-	while(params != NULL)
-    {
-		nparams++;
-		localtemp = localtemp->next;
-		
-        if(localtemp != NULL)
+        if(strcmp(tipo, tipo2) != 0)
         {
-			if (localtemp->param == 1)
-            {
-				char* paramtype = getType(params->id, prog, method_name);
-                
-				//variavel nao declarada
-				if(paramtype ==	NULL)
-                {
-					printf("Cannot find symbol %s\n", params->id);
-					exit(0);
-				}
-                
-				//tipos incompativeis
-				if(strcmp(localtemp->type, paramtype) != 0)
-                {
-					printf("Incompatible type of argument %d in call to method %s (got %s, required %s)\n",nparams,methodCalled,paramtype,localtemp->type);
-					exit(0);
-				}
-                
-			}else
-            {
-				//parametros a mais escritos
-				printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n", nparams, methodCalled, getType(params->id, prog, method_name));
-				exit(0);
-			}
-		}else{
-			//parametros a mais escritos
-			printf("Incompatible type of argument %d in call to method %s (got %s, required void)\n",nparams,methodCalled, getType(params->id, prog, method_name));
-			exit(0);
-		}
-		params=params->next;
-	}
+            printf("Incompatible type of argument %d in call to method %s (got %s, required %s)\n", n_argument, method_called, tipo, tipo2);
+            exit(0);
+        }
+        call = call->next;
+        n_argument++;
+    }
     
-	int pos;
-	//parametros a menos escritos
-	if(nparams < (pos=getParamN(prog,methodCalled))){
-		
-		char* req = getParambyPos(prog,methodCalled,pos);
-		printf("Incompatible type of argument %d in call to method %s (got void, required %s)\n",nparams+1,methodCalled, req);
-		exit(0);
-	}
-}
-
-// (3) Incompatible type in assignment to %s (got %s, required %s)
-// recebe um no Store, verifica se os tipos sao compativeis
-void check_incompatible_assignment(is_node *store, prog_env* prog, char* method_name)
-{
-    char* type1 = getType(store->id, prog, method_name);
-    char* type2 = typeCast(sem_type[store->next->type]);
-    
-    printf("No Store detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", store->id, type1, type2);
-
-    if(strcmp(type1, type2) != 0)
+    tipo2 = getArgumentType(prog, method_called, n_argument);
+    if(strcmp(tipo2, "void") != 0)
     {
-        printf("Incompatible type in assigment to %s (got %s, required %s)\n", store->id, type2, type1);
+        printf("Incompatible type of argument %d in call to method %s (got void, required %s)\n", n_argument, method_called, tipo2);
         exit(0);
     }
 }
 
-// (4) Incompatible type in assignment to %s[] (got %s, required %s)
-// recebe um no StoreArray, verifica se os tipos sao compativeis
-void check_incompatible_assignment_array(is_node *storeArray, prog_env* prog, char* method_name)
+void check_literal(char* lit)
 {
-    char* type1 = getType(storeArray->id, prog, method_name);
-    char* type2 = typeCast(sem_type[storeArray->next->next->type]);
-    
-    if(strcmp(type1, "int[]") == 0)
-        type1 = "int";
-    else if(strcmp(type1, "boolean[]") == 0)
-        type1 = "boolean";
-
-    printf("No StoreArray detetado! Verificar Compatabilidade entre:\n- variavel %s do tipo %s\n- objeto com o tipo %s\n", storeArray->id, type1, type2);
-    
-    if(strcmp(type1, type2) != 0)
+    if(strlen(lit) > 1 && lit[0] == '0' && lit[1] != 'x')
     {
-        printf("Incompatible type in assigment to %s[] (got %s, required %s)\n", storeArray->id, type2, type1);
-        exit(0);
+        printf("Invalid literal %s\n", lit);
+		exit(0);
     }
 }
 
-//(7) Invalid literal %s
-void check_literal(is_node* node)
-{
-	char* id = node->id;
-	int i = 0;
-	while(id[i] != NULL)
-		i++;
-    
-	if(id[0] == '0' && i > 1)
-    {
-		printf("Invalid literal %s\n", id);
-		exit(0);
-	}
-}
-
-// (10) Symbol %s already defined
 void check_defined(char* name, char* nameNew)
 {
-	if(strcmp(name,nameNew) == 0)
+	if(strcmp(name, nameNew) == 0)
     {
 		printf ("Symbol %s already defined\n", name);
 		exit(0);
 	}
 }
 
-
-//devolve o numero de parametros de um determinado metodo
-int getParamN(prog_env* prog,char*called)
-{
-    
-	environment_list* aux;
-	aux = prog->methods;
-	int param=-1;
-	//verifica variaveis locais do metodo em questao
-	while(aux!=NULL){
-		if(strcmp(aux->name,called)==0){
-			table_element* local = aux->locals;
-			while(local!=NULL){
-				param+=local->param;
-				local=local->next;
-			}
-			return param;
-		}
-		aux=aux->next;
-	}
-	return param;
-}
-
-//devolve o tipo de um parametro especificado pelo numero da sua posicao num determinado metodo
-char* getParambyPos(prog_env* prog,char*called,int pos)
-{
-    
-	environment_list* aux;
-	aux = prog->methods;
-	int param=-1;
-	//verifica variaveis locais do metodo em questao
-	while(aux!=NULL){
-		if(strcmp(aux->name,called)==0){
-			table_element* local = aux->locals;
-			while(local!=NULL){
-				param+=local->param;
-				if(pos == param){
-					return local->type;
-				}
-				local=local->next;
-			}
-		}
-		aux=aux->next;
-	}
-	return NULL;
-}
-
-// recebe nome de variavel e nome de metodo em que pode estar
-// devolve o tipo da variavel caso exista
-// devolve NULL caso nao exista
 char* getType(char* nameP, prog_env* prog, char* methodName)
 {
 	table_element* temp;
@@ -742,16 +748,7 @@ char* getType(char* nameP, prog_env* prog, char* methodName)
 	environment_list* aux;
 	aux = prog->methods;
     
-    
-	// verifica variaveis globais
-	while(temp != NULL)
-    {
-		if(strcmp(temp->name, nameP) == 0 && strcmp(temp->type, "method") != 0)
-			return temp->type;
-		temp = temp->next;
-	}
-    
-	// verifica variaveis locais do metodo em questao
+    // verifica variaveis locais do metodo em questao
 	while(aux != NULL)
     {
 		if(strcmp(aux->name, methodName) == 0)
@@ -763,14 +760,20 @@ char* getType(char* nameP, prog_env* prog, char* methodName)
 					return local->type;
 				local = local->next;
 			}
-			return NULL;
 		}
 		aux = aux->next;
+	}
+    
+	// verifica variaveis globais
+	while(temp != NULL)
+    {
+		if(strcmp(temp->name, nameP) == 0 && strcmp(temp->type, "method") != 0)
+			return temp->type;
+		temp = temp->next;
 	}
 	return NULL;
 }
 
-// recebe o nome de um metodo, devolve o que ele retorna em string
 char* method_return(prog_env* prog, char* method_name)
 {
 	environment_list* aux;
@@ -785,39 +788,33 @@ char* method_return(prog_env* prog, char* method_name)
         }
         aux = aux->next;
     }
+    return NULL;
 }
 
-// cast entre tipos na AST e tipos da tabela de simbolo
-char* typeCast(char* type)
+char* getArgumentType(prog_env* prog, char* method_called, int index)
 {
-    if(strcmp(type, "IntLit") == 0)
-        return "int";
-    else if(strcmp(type, "BoolLit") == 0)
-        return "boolean";
-    else if(strcmp(type, "NewInt") == 0)
-        return "int";
-    else if(strcmp(type, "NewBool") == 0)
-        return "boolean";
-    else if(strcmp(type, "Int") == 0)
-        return "int";
-    else if(strcmp(type, "Bool") == 0)
-        return "boolean";
-    else if(strcmp(type, "Void") == 0)
-        return "void";
-    else if(strcmp(type, "IntArray") == 0)
-        return "int[]";
-    else if(strcmp(type, "BoolArray") == 0)
-        return "boolean[]";
-    else if(strcmp(type, "StringArray") == 0)
-        return "String[]";
-    else
+    environment_list* aux;
+	aux = prog->methods;
+    
+    while(aux != NULL) // percorre a lista de metodos
     {
-        printf("erro na func typeCast\n");
-        return NULL;
+        if(strcmp(method_called, aux->name) == 0) // se encontrar o metodo
+        {
+            int counter = 0;
+            table_element* local = aux->locals; // percorrer a lista de simbolos
+            local = local->next; // ignorar o return
+            while(local != NULL)
+            {
+                if(counter == index)
+                    return(local->type);
+                local = local->next;
+                counter++;
+            }
+        }
+        aux = aux->next;
     }
+    return "void";
 }
-
-
 
 
 
