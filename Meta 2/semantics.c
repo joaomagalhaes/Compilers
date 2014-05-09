@@ -233,12 +233,10 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
         switch(node->type)
         {
             case CompoundStat:
-                if(debug) printf("No CompoundStat Encontrado\n");
                 semantic_statements(prog, name, node->child);
                 break;
                 
             case IfElse:
-                if(debug) printf("No IfElse Encontrado\n");
                 expr_type = expr_recursive(prog, name, node->child);
                 if(strcmp(expr_type, "boolean") != 0)
                 {
@@ -249,7 +247,6 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
                 break;
                 
             case Print:
-                if(debug) printf("No Print Encontrado\n");
                 expr_type = expr_recursive(prog, name, node->child);
                 
                 if(strcmp(expr_type, "boolean") != 0 && strcmp(expr_type, "int") != 0)
@@ -260,7 +257,6 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
                 break;
                 
             case Return:
-                if(debug) printf("No Return Encontrado\n");
                 if(node->child != NULL)
                 {
                     expr_type = expr_recursive(prog, name, node->child);
@@ -282,7 +278,6 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
                 break;
                 
             case Store:
-                if(debug) printf("No Store Encontrado\n");
                 expr_type = expr_recursive(prog, name, node->child);
                 expr_type2 = expr_recursive(prog, name, node->child->next);
                 if(strcmp(expr_type, expr_type2) != 0)
@@ -293,7 +288,6 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
                 break;
 
             case StoreArray:
-                if(debug) printf("No StoreArray Encontrado\n");
                 expr_type = expr_recursive(prog, name, node->child);
                 expr_type2 = expr_recursive(prog, name, node->child->next);
                 expr_type3 = expr_recursive(prog, name, node->child->next->next);
@@ -323,7 +317,6 @@ void semantic_statements(prog_env* prog, char* name, is_node* node)
                 break;
 
             case While:
-                if(debug) printf("No While Encontrado\n");
                 expr_type = expr_recursive(prog, name, node->child);
             
                 if(strcmp(expr_type, "boolean") != 0)
@@ -389,7 +382,7 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
         case Eq:
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
-            if(strcmp(expr_type, expr_type1) != 0) // pode fazer-se int[] == int[] e boolean[] == boolean[] ?
+            if(strcmp(expr_type, expr_type1) != 0)
             {
                 printf("Operator == cannot be applied to types %s, %s\n", expr_type, expr_type1);
                 exit(0);
@@ -397,11 +390,10 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             return "boolean";
             break;
             
-        case Neq: // x != y - pode ser aplicado a inteiros e booleans
-            if(debug) printf("No Neq\n");
+        case Neq:
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
-            if(strcmp(expr_type, expr_type1) != 0) // pode fazer-se int[] != int[] e boolean[] != boolean[] ?
+            if(strcmp(expr_type, expr_type1) != 0)
             {
                 printf("Operator != cannot be applied to types %s, %s\n", expr_type, expr_type1);
                 exit(0);
@@ -409,7 +401,7 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             return "boolean";
             break;
             
-        case Lt: // x < y - so pode ser aplicado a inteiros, devolve boolean
+        case Lt:
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             if( strcmp(expr_type, "int") != 0 || strcmp(expr_type1, "int") != 0)
@@ -465,7 +457,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Sub:
-            if(debug) printf("No Sub\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
@@ -477,7 +468,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Mul:
-            if(debug) printf("No Mul\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
@@ -489,7 +479,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Div:
-            if(debug) printf("No Div\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
@@ -501,7 +490,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Mod:
-            if(debug) printf("No Mod\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             if(strcmp(expr_type, "int") != 0 ||  strcmp(expr_type1, "int") != 0)
@@ -513,7 +501,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Plus:
-            if(debug) printf("No Plus\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             if(strcmp(expr_type, "int") != 0)
             {
@@ -524,7 +511,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Minus:
-            if(debug) printf("No Minus\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             if(strcmp(expr_type, "int") != 0)
             {
@@ -535,7 +521,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case Length:
-            if(debug) printf("No Length\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             if(strcmp(expr_type, "int") == 0 || strcmp(expr_type, "boolean") == 0)
             {
@@ -546,11 +531,10 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case LoadArray:
-            if(debug) printf("No LoadArray\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
         
-            if((strcmp(expr_type, "int[]") != 0 && strcmp(expr_type, "boolean[]") != 0 && strcmp(expr_type, "String[]") != 0 ) || strcmp(expr_type1, "int") != 0)
+            if((strcmp(expr_type, "int[]") != 0 && strcmp(expr_type, "boolean[]") != 0) || strcmp(expr_type1, "int") != 0)
             {
                 printf("Operator [ cannot be applied to types %s, %s\n", expr_type, expr_type1);
                 exit(0);
@@ -560,15 +544,12 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
                 expr_type = "int";
             else if(strcmp(expr_type, "boolean[]") == 0)
                 expr_type = "boolean";
-            else if(strcmp(expr_type, "String[]") == 0)
-                expr_type = "String";
             
             return expr_type;
             break;
             
         case NewInt:
-            if(debug) printf("No NewInt\n");
-            expr_type =  expr_recursive(prog, method_name, expr->child);
+            expr_type = expr_recursive(prog, method_name, expr->child);
             if(strcmp(expr_type, "int") != 0)
             {
                 printf("Operator new int cannot be applied to type %s\n", expr_type);
@@ -578,7 +559,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case NewBool:
-            if(debug) printf("No NewBool\n");
             expr_type =  expr_recursive(prog, method_name, expr->child);
             if(strcmp(expr_type, "int") != 0)
             {
@@ -589,7 +569,6 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case ParseArgs:
-            if(debug) printf("No ParseArgs\n");
             expr_type = expr_recursive(prog, method_name, expr->child);
             expr_type1 = expr_recursive(prog, method_name, expr->child->next);
             
@@ -602,18 +581,15 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
             break;
             
         case IntLit:
-            if(debug) printf("No IntLit\n");
             check_literal(expr->id);
             return "int";
             break;
             
         case BoolLit:
-            if(debug) printf("No BoolLit\n");
             return "boolean";
             break;
             
         case Id:
-            if(debug) printf("No Id\n");
             check_symbol_existence(expr, prog, method_name, 0);
             return getType(expr->id, prog, method_name);
             break;
@@ -621,8 +597,7 @@ char* expr_recursive(prog_env* prog, char* method_name, is_node* expr)
         default:
             break;
     }
-
-    return "teste";
+    return "erro";
 }
 
 void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, int type)
@@ -637,16 +612,11 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
     
     if(type == 0) // procurar variavel
     {
-        if(debug) printf("Verificar se a variavel %s existe\n", node->id);
-        
         // verifica nas variveis globais
         while(temp != NULL)
         {
             if(strcmp(temp->name, node->id) == 0 && strcmp(temp->type, "method") != 0)
-            {
-                if(debug) printf("variavel encontrada na tabela de simbolos global\n\n");
                 found = 1;
-            }
             temp = temp->next;
         }
         
@@ -659,10 +629,7 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
                 while(local != NULL)
                 {
                     if(strcmp(local->name, node->id) == 0)
-                    {
-                        if(debug) printf("variavel encontrada na tabela de simbolos do seu metodo\n\n");
                         found = 1;
-                    }
                     local = local->next;
                 }
             }
@@ -692,8 +659,6 @@ void check_symbol_existence(is_node* node, prog_env* prog, char* method_name, in
 
 void check_arguments(is_node* call, prog_env* prog, char* method_name)
 {
-    if(debug) printf("verificar se os argumentos passados na funcao, estao correctos\n");
-    
     char* method_called = call->id;
     char* tipo;
     char* tipo2;

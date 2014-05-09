@@ -48,10 +48,8 @@ prog_env *mySemantic = NULL;
 %left OP3
 %left OP4
 %right NEW
-%right NOT
-%left OCURV CCURV OSQUARE CSQUARE
-%left DOTLENGTH
-%nonassoc UMINUS
+%right NOT UMINUS
+%left OCURV CCURV OSQUARE CSQUARE DOTLENGTH
 
 %nonassoc ELSE
 
@@ -167,15 +165,16 @@ int main(int argc, char **argv)
 				show_table = 1;
 		}	
 
-		if(show_ast == 1 && myProgram != NULL)
+		if(show_ast && myProgram != NULL)
 			printAST(myProgram, 0);
         
-		mySemantic = check_program(myProgram); // construccao da tabela de simbolos
-        check_semantic(myProgram, mySemantic); // verificacao de erros semanticos
-		
-		if(show_table == 1)	
+        if(show_table)
+        {
+            mySemantic = check_program(myProgram); // construccao da tabela de simbolos
+            check_semantic(myProgram, mySemantic); // verificacao de erros semanticos
 			show_tables(mySemantic);
-	}
+        }
+    }
 	
 	return 0;
 }

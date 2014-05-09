@@ -4,6 +4,7 @@ class compiladores
 
 	public static int[] main(String[] args)
 	{
+		int x, iii;
 		boolean var;
 		int[] cenas, lols;
 /*
@@ -13,8 +14,8 @@ class compiladores
 		boolean[] w;
 		boolean ppp;
 		int p, x;*/
-	
-		if(lols == cenas){}	
+		x = Integer.parseInt(args[1]);	
+		//if(lols == cenas){}	
 	//	if(var){}
 			
 			//p = 0x;	

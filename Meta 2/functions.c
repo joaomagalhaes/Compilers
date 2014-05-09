@@ -499,7 +499,6 @@ is_node *insertStatRepetition(is_node *stat, is_node *stat2)
 	return stat;
 }
 
-
 is_node *nullNode()
 {
     is_node *node = (is_node*) malloc(sizeof(is_node));

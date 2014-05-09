@@ -14,7 +14,6 @@ char* types[] = {	"Program",
 
 void printAST(is_node* node, int tabs)
 {	
-	//printf("tabs > %d\n", tabs);	
 	if(node->type != NoNode)
 	{	
 		int i;
