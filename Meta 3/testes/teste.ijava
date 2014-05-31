@@ -1,0 +1,44 @@
+class geracao_codigo
+{
+	static int global_int, asdsa, sadas, sadsa;
+	static boolean global_boolean;
+	
+	public static boolean funcaoQueDevolveBool()
+	{
+		int w;
+		//w = +6;
+	}
+	public static void funcaoSemArgumentos()
+	{
+	}
+
+	public static int func(int a){}	
+	public static void main(String[] args)
+	{
+		global_int = 10;
+
+		//int sadas;
+		sadas = 1;
+System.out.println(global_int);
+/*
+		boolean a, bo, bo2;
+		int  b;
+		a = true;
+		bo = false;
+	//	System.out.println(Integer.parseInt(args[0]));
+	//System.out.println(args.length);
+x=1;
+		System.out.println(x);	
+	//global_int = 3;
+		//c = true;
+		//System.out.println(a);
+		//System.out.println(bo);
+		//System.out.println(10 + 1);
+		//int firstvardeclmethod;
+		//int secondvardeclmethod;
+ */	
+ }
+static int x;	
+
+}
+
